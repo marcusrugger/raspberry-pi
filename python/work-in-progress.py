@@ -24,7 +24,7 @@ def toggle_led():
     set_led(not(LED_STATE))
 
 def button_changed_state(state):
-    if state == GPIO.HIGH:
+    if state == GPIO.LOW:
         toggle_led()
 
 def idle_loop():
@@ -33,7 +33,7 @@ def idle_loop():
     try:
         while True:
             print("Sleeping...")
-            time.sleep(1)
+            time.sleep(0.2)
             input_state = GPIO.input(CHANNEL_SWITCH)
             if input_state != SWITCH_STATE:
                 SWITCH_STATE=input_state
