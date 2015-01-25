@@ -24,7 +24,7 @@ def toggle_led():
     set_led(not(LED_STATE))
 
 def button_changed_state(state):
-    if state == GPIO.HIGH
+    if state == GPIO.HIGH:
         toggle_led()
 
 def idle_loop():
