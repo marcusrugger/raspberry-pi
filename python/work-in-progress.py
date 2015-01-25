@@ -23,23 +23,31 @@ def set_led(state):
 def toggle_led():
     set_led(not(LED_STATE))
 
+def button_changed_state(state):
+    if state == GPIO.HIGH
+        toggle_led()
+
+def idle_loop():
+    global SWITCH_STATE
+
+    try:
+        while True:
+            print("Sleeping...")
+            time.sleep(1)
+            input_state = GPIO.input(CHANNEL_SWITCH)
+            if input_state != SWITCH_STATE:
+                SWITCH_STATE=input_state
+                button_changed_state(input_state)
+
+    except:
+        e = sys.exc_info()[0]
+        print 'Caught exception: {0}'.format(e)
+        pass
+
 
 set_led(True)
 
-try:
-    while True:
-        print("Sleeping...")
-        time.sleep(1)
-        input_state = GPIO.input(CHANNEL_SWITCH)
-        if input_state != SWITCH_STATE:
-            print("Switch changed state.")
-            SWITCH_STATE = input_state
-            toggle_led()
-
-except:
-    e = sys.exc_info()[0]
-    print 'Caught exception: {0}'.format(e)
-    pass
+idle_loop()
 
 GPIO.cleanup()
 print("All done.  Goodbye.");
