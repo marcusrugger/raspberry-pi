@@ -15,18 +15,18 @@ class Led:
         GPIO.setup(self.channel, GPIO.OUT)
         GPIO.output(self.channel, self.state)
 
-    def set(state):
+    def set(self, state):
         self.state = state
         GPIO.output(self.channel, self.state)
 
-    def toggleState():
-        set(not self.state)
+    def toggleState(self):
+        self.set(not self.state)
 
-    def turnOn():
-        set(True)
+    def turnOn(self):
+        self.set(True)
 
-    def turnOff():
-        set(False)
+    def turnOff(self):
+        self.set(False)
 
 
 def button_changed_state(state):
