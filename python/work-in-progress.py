@@ -62,7 +62,7 @@ class Application:
         self.ledRed = Led(self.CHANNEL_LED_RED, False)
         self.ledYellow = Led(self.CHANNEL_LED_YELLOW, False)
 
-        self.toggleButton = ToggleButton(self.ledRed)
+        self.toggleButton = ToggleButton(self, CHANNEL_SWITCH_MAIN, self.ledRed)
 
         self.ledRed.turnOff()
         self.ledYellow.turnOn()
