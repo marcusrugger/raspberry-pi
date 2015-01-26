@@ -6,14 +6,13 @@ import sys
 
 
 def set_led(state):
-    global LED_STATE
-    LED_STATE = state
-    print 'New LED state: {0}'.format(LED_STATE)
-    GPIO.output(CHANNEL_LED, LED_STATE)
+    global STATE_LED_RED
+    STATE_LED_RED = state
+    GPIO.output(CHANNEL_LED_RED, STATE_LED_RED)
 
 
 def toggle_led():
-    set_led(not(LED_STATE))
+    set_led(not(STATE_LED_RED))
 
 
 def button_changed_state(state):
@@ -21,15 +20,21 @@ def button_changed_state(state):
         toggle_led()
 
 
-def idle_loop():
+def execute():
     global SWITCH_STATE
 
-    while True:
+    input_state = GPIO.input(CHANNEL_SWITCH_MAIN)
+    if input_state != SWITCH_STATE:
+        SWITCH_STATE=input_state
+        button_changed_state(input_state)
+
+
+def idle_loop():
+    global keepRunning
+
+    while keepRunning:
         time.sleep(0.2)
-        input_state = GPIO.input(CHANNEL_SWITCH)
-        if input_state != SWITCH_STATE:
-            SWITCH_STATE=input_state
-            button_changed_state(input_state)
+        execute()
 
 
 def run_application():
@@ -44,16 +49,22 @@ def run_application():
 
 def initialize_application():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(CHANNEL_SWITCH, GPIO.IN)
-    GPIO.setup(CHANNEL_LED, GPIO.OUT)
+    GPIO.setup(CHANNEL_SWITCH_MAIN, GPIO.IN)
+    GPIO.setup(CHANNEL_LED_RED, GPIO.OUT)
+    GPIO.setup(CHANNEL_LED_YELLOW, GPIO.OUT)
+    GPIO.output(CHANNEL_LED_YELLOW, True)
     set_led(True)
 
 
-LED_STATE=True
+STATE_LED_RED=True
 SWITCH_STATE=GPIO.HIGH
 
-CHANNEL_SWITCH=2
-CHANNEL_LED=4
+CHANNEL_SWITCH_MAIN=2
+CHANNEL_SWITCH_SECONDARY=3
+CHANNEL_LED_RED=21
+CHANNEL_LED_YELLOW=16
+
+keepRunning = True
 
 initialize_application()
 run_application()
