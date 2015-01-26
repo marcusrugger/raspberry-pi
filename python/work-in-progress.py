@@ -12,6 +12,7 @@ class Led:
     def __init__(self, channel, state):
         mChannel = channel
         mState = state
+        GPIO.setup(mChannel, GPIO.OUT)
         GPIO.output(mChannel, mState)
 
     def toggleState():
@@ -58,15 +59,11 @@ def run_application():
 def initialize_application():
     global buttonRed
     global buttonYellow
-    buttonRed = Led(CHANNEL_LED_RED, False)
-    buttonYellow = Led(CHANNEL_LED_YELLOW, False)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(CHANNEL_SWITCH_MAIN, GPIO.IN)
-    GPIO.setup(CHANNEL_LED_RED, GPIO.OUT)
-    GPIO.setup(CHANNEL_LED_YELLOW, GPIO.OUT)
-    GPIO.output(CHANNEL_LED_YELLOW, True)
-    set_led(True)
-    
+    buttonRed = Led(CHANNEL_LED_RED, False)
+    buttonYellow = Led(CHANNEL_LED_YELLOW, False)
+
 
 STATE_LED_RED=True
 SWITCH_STATE=GPIO.HIGH
@@ -83,4 +80,3 @@ run_application()
 
 GPIO.cleanup()
 print("All done.  Goodbye.");
-
