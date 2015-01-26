@@ -57,10 +57,10 @@ class Application:
 
     def __init__(self):
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(CHANNEL_SWITCH_MAIN, GPIO.IN)
+        GPIO.setup(self.CHANNEL_SWITCH_MAIN, GPIO.IN)
 
-        self.ledRed = Led(CHANNEL_LED_RED, False)
-        self.ledYellow = Led(CHANNEL_LED_YELLOW, False)
+        self.ledRed = Led(self.CHANNEL_LED_RED, False)
+        self.ledYellow = Led(self.CHANNEL_LED_YELLOW, False)
 
         self.toggleButton = ToggleButton(self.ledRed)
 
