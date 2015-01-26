@@ -15,7 +15,7 @@ class Led:
         GPIO.setup(self.channel, GPIO.OUT)
         GPIO.output(self.channel, self.state)
 
-    def set(state)
+    def set(state):
         self.state = state
         GPIO.output(self.channel, self.state)
 
