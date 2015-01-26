@@ -32,7 +32,8 @@ class Led:
 class ToggleButton:
     last_state=GPIO.HIGH
 
-    def __init__(self, button):
+    def __init__(self, channel, button):
+        self.channel = channel
         self.button = button
 
     def stateChanged(self, state):
@@ -40,13 +41,18 @@ class ToggleButton:
             self.button.toggleState()
 
     def stateTest(self):
-        input_state = GPIO.input(CHANNEL_SWITCH_MAIN)
+        input_state = GPIO.input(self.channel)
         if input_state != self.last_state:
             self.last_state=input_state
             self.stateChanged(input_state)
 
 
 class Application:
+    CHANNEL_SWITCH_MAIN=2
+    CHANNEL_SWITCH_SECONDARY=3
+    CHANNEL_LED_RED=21
+    CHANNEL_LED_YELLOW=16
+
     sleep_time=0.2
 
     def __init__(self):
@@ -82,13 +88,7 @@ class Application:
             pass
 
 
-CHANNEL_SWITCH_MAIN=2
-CHANNEL_SWITCH_SECONDARY=3
-CHANNEL_LED_RED=21
-CHANNEL_LED_YELLOW=16
-
-application = Application()
-application.run()
+Application().run()
 
 GPIO.cleanup()
 print("All done.  Goodbye.");
