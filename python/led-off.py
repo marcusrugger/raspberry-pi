@@ -3,8 +3,10 @@
 import RPi.GPIO
 import time
 
-RPi.GPIO.setmode(RPi.GPIO.BCM)
-RPi.GPIO.setup(2, RPi.GPIO.OUT)
+CHANNEL_LED=4
 
-RPi.GPIO.output(2, False)
+RPi.GPIO.setmode(RPi.GPIO.BCM)
+RPi.GPIO.setup(CHANNEL_LED, RPi.GPIO.OUT)
+
+RPi.GPIO.output(CHANNEL_LED, False)
 
