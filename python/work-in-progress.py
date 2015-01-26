@@ -43,7 +43,7 @@ class ToggleButton:
         input_state = GPIO.input(CHANNEL_SWITCH_MAIN)
         if input_state != self.last_state:
             last_state=input_state
-            stateChanged(input_state)
+            self.stateChanged(input_state)
 
 
 
