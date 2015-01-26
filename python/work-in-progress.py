@@ -29,23 +29,27 @@ class Led:
         self.set(False)
 
 
-def button_changed_state(state):
-    if state == GPIO.LOW:
-        buttonRed.toggleState()
+class ToggleButton:
+    last_state=GPIO.HIGH
 
+    def __init__(self, button):
+        self.button = button
 
-def process_main_button():
-    global SWITCH_STATE
+    def stateChanged(self, state):
+        if state == GPIO.LOW:
+            self.button.toggleState()
 
-    input_state = GPIO.input(CHANNEL_SWITCH_MAIN)
-    if input_state != SWITCH_STATE:
-        SWITCH_STATE=input_state
-        button_changed_state(input_state)
+    def stateTest(self):
+        input_state = GPIO.input(CHANNEL_SWITCH_MAIN)
+        if input_state != self.last_state:
+            last_state=input_state
+            stateChanged(input_state)
+
 
 
 def execute():
-    process_main_button()
-    buttonYellow.toggleState()
+    toggleButton.stateTest()
+    ledYellow.toggleState()
 
 
 def idle_loop():
@@ -67,21 +71,21 @@ def run_application():
 
 
 def initialize_application():
-    global buttonRed
-    global buttonYellow
+    global toggleButton
+    global ledRed
+    global ledYellow
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(CHANNEL_SWITCH_MAIN, GPIO.IN)
 
-    buttonRed = Led(CHANNEL_LED_RED, False)
-    buttonYellow = Led(CHANNEL_LED_YELLOW, False)
+    ledRed = Led(CHANNEL_LED_RED, False)
+    ledYellow = Led(CHANNEL_LED_YELLOW, False)
 
-    buttonRed.turnOff()
-    buttonYellow.turnOn()
+    toggleButton = ToggleButton(ledRed)
 
+    ledRed.turnOff()
+    ledYellow.turnOn()
 
-STATE_LED_RED=True
-SWITCH_STATE=GPIO.HIGH
 
 CHANNEL_SWITCH_MAIN=2
 CHANNEL_SWITCH_SECONDARY=3
