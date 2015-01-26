@@ -42,49 +42,44 @@ class ToggleButton:
     def stateTest(self):
         input_state = GPIO.input(CHANNEL_SWITCH_MAIN)
         if input_state != self.last_state:
-            last_state=input_state
+            self.last_state=input_state
             self.stateChanged(input_state)
 
 
+class Application:
+    sleep_time=0.2
 
-def execute():
-    toggleButton.stateTest()
-    ledYellow.toggleState()
+    def __init__(self):
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(CHANNEL_SWITCH_MAIN, GPIO.IN)
 
+        self.ledRed = Led(CHANNEL_LED_RED, False)
+        self.ledYellow = Led(CHANNEL_LED_YELLOW, False)
 
-def idle_loop():
-    global keepRunning
+        self.toggleButton = ToggleButton(self.ledRed)
 
-    while keepRunning:
-        time.sleep(0.2)
-        execute()
+        self.ledRed.turnOff()
+        self.ledYellow.turnOn()
 
+    def execute(self):
+        self.toggleButton.stateTest()
+        self.ledYellow.toggleState()
 
-def run_application():
-    try:
-        idle_loop()
+    def idle_loop(self):
+        self.keepRunning = True
 
-    except:
-        e = sys.exc_info()[0]
-        print 'Caught exception: {0}'.format(e)
-        pass
+        while self.keepRunning:
+            time.sleep(self.sleep_time)
+            self.execute()
 
+    def run(self):
+        try:
+            self.idle_loop()
 
-def initialize_application():
-    global toggleButton
-    global ledRed
-    global ledYellow
-
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(CHANNEL_SWITCH_MAIN, GPIO.IN)
-
-    ledRed = Led(CHANNEL_LED_RED, False)
-    ledYellow = Led(CHANNEL_LED_YELLOW, False)
-
-    toggleButton = ToggleButton(ledRed)
-
-    ledRed.turnOff()
-    ledYellow.turnOn()
+        except:
+            e = sys.exc_info()[0]
+            print 'Caught exception: {0}'.format(e)
+            pass
 
 
 CHANNEL_SWITCH_MAIN=2
@@ -92,10 +87,8 @@ CHANNEL_SWITCH_SECONDARY=3
 CHANNEL_LED_RED=21
 CHANNEL_LED_YELLOW=16
 
-keepRunning = True
-
-initialize_application()
-run_application()
+application = Application()
+application.run()
 
 GPIO.cleanup()
 print("All done.  Goodbye.");
