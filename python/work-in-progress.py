@@ -6,18 +6,27 @@ import sys
 
 
 class Led:
-    mChannel=2
-    mState=False
+    channel=2
+    state=False
 
     def __init__(self, channel, state):
-        mChannel = channel
-        mState = state
-        GPIO.setup(mChannel, GPIO.OUT)
-        GPIO.output(mChannel, mState)
+        self.channel = channel
+        self.state = state
+        GPIO.setup(self.channel, GPIO.OUT)
+        GPIO.output(self.channel, self.state)
+
+    def set(state)
+        self.state = state
+        GPIO.output(self.channel, self.state)
 
     def toggleState():
-        mState = not mState
-        GPIO.output(mChannel, mState)
+        set(not self.state)
+
+    def turnOn():
+        set(True)
+
+    def turnOff():
+        set(False)
 
 
 def button_changed_state(state):
@@ -36,6 +45,7 @@ def process_main_button():
 
 def execute():
     process_main_button()
+    buttonYellow.toggleState()
 
 
 def idle_loop():
@@ -59,10 +69,15 @@ def run_application():
 def initialize_application():
     global buttonRed
     global buttonYellow
+
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(CHANNEL_SWITCH_MAIN, GPIO.IN)
+
     buttonRed = Led(CHANNEL_LED_RED, False)
     buttonYellow = Led(CHANNEL_LED_YELLOW, False)
+
+    buttonRed.turnOff()
+    buttonYellow.turnOn()
 
 
 STATE_LED_RED=True
