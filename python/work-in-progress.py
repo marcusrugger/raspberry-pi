@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import RPi.GPIO as GPIO
 import time
@@ -84,7 +84,7 @@ class Application:
 
         except:
             e = sys.exc_info()[0]
-            print 'Caught exception: {0}'.format(e)
+            print('Caught exception: {0}'.format(e))
             pass
 
 
