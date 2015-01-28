@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
 import RPi.GPIO as GPIO
+import picamera
 import time
 import sys
 
 
-class Camera
+class Camera:
     def __init__(self):
         self.camera = picamera.PiCamera()
         self.camera.vflip = True
@@ -43,8 +44,8 @@ class Led:
         self.set(False)
 
 
-class ToggleState
-    def __init__(self, starting_state, target)
+class ToggleState:
+    def __init__(self, starting_state, target):
         self.state = starting_state
         self.target = target
 
@@ -94,7 +95,7 @@ class Application:
         self.ledRed = Led(self.CHANNEL_LED_RED, False)
         self.ledYellow = Led(self.CHANNEL_LED_YELLOW, False)
 
-        self.targetState = ToggleState(false, self.camera)
+        self.targetState = ToggleState(False, self.camera)
 
         self.toggleButton = ToggleButton(self.CHANNEL_SWITCH_MAIN, self.targetState)
 
