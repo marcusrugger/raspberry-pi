@@ -5,6 +5,19 @@ import time
 import sys
 
 
+class Camera
+    def __init__(self):
+        self.camera = picamera.PiCamera()
+        self.camera.vflip = True
+        self.camera.brightness = 60
+
+    def turnOn(self):
+        self.camera.start_preview
+
+    def turnOff(self):
+        self.camera.stop_preview
+
+
 class Led:
     channel=2
     state=False
@@ -19,6 +32,7 @@ class Led:
         self.state = state
         GPIO.output(self.channel, self.state)
 
+
     def toggleState(self):
         self.set(not self.state)
 
@@ -29,16 +43,32 @@ class Led:
         self.set(False)
 
 
+class ToggleState
+    def __init__(self, starting_state, target)
+        self.state = starting_state
+        self.target = target
+
+    def toggleState(self):
+        self.state = not self.state
+
+        if self.state:
+            self.target.turnOn
+        else:
+            self.target.turnOff
+
+        return state
+
+
 class ToggleButton:
     last_state=GPIO.HIGH
 
-    def __init__(self, channel, button):
+    def __init__(self, channel, target):
         self.channel = channel
-        self.button = button
+        self.target = target
 
     def stateChanged(self, state):
         if state == GPIO.LOW:
-            self.button.toggleState()
+            self.target.toggleState()
 
     def stateTest(self):
         input_state = GPIO.input(self.channel)
@@ -59,10 +89,14 @@ class Application:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.CHANNEL_SWITCH_MAIN, GPIO.IN)
 
+        self.camera = Camera()
+
         self.ledRed = Led(self.CHANNEL_LED_RED, False)
         self.ledYellow = Led(self.CHANNEL_LED_YELLOW, False)
 
-        self.toggleButton = ToggleButton(self.CHANNEL_SWITCH_MAIN, self.ledRed)
+        self.targetState = ToggleState(false, self.camera)
+
+        self.toggleButton = ToggleButton(self.CHANNEL_SWITCH_MAIN, self.targetState)
 
         self.ledRed.turnOff()
         self.ledYellow.turnOn()
