@@ -12,11 +12,15 @@ class Camera:
         self.camera.vflip = True
         self.camera.brightness = 60
 
+    def close(self):
+        print("Closing camera.")
+        self.camera.close()
+
     def turnOn(self):
-        self.camera.start_preview
+        self.camera.start_preview()
 
     def turnOff(self):
-        self.camera.stop_preview
+        self.camera.stop_preview()
 
 
 class Led:
@@ -53,11 +57,9 @@ class ToggleState:
         self.state = not self.state
 
         if self.state:
-            self.target.turnOn
+            self.target.turnOn()
         else:
-            self.target.turnOff
-
-        return state
+            self.target.turnOff()
 
 
 class ToggleButton:
@@ -119,8 +121,10 @@ class Application:
 
         except:
             e = sys.exc_info()[0]
-            print('Caught exception: {0}'.format(e))
+            print('Caught eqxception: {0}'.format(e))
             pass
+
+        self.camera.close()
 
 
 Application().run()
