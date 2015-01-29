@@ -1,8 +1,26 @@
 #!/usr/bin/python3
 
 import RPi.GPIO as GPIO
+import picamera
 import time
 import sys
+
+
+class Camera:
+    def __init__(self):
+        self.camera = picamera.PiCamera()
+        self.camera.vflip = True
+        self.camera.brightness = 60
+
+    def close(self):
+        print("Closing camera.")
+        self.camera.close()
+
+    def turnOn(self):
+        self.camera.start_preview()
+
+    def turnOff(self):
+        self.camera.stop_preview()
 
 
 class Led:
@@ -19,6 +37,7 @@ class Led:
         self.state = state
         GPIO.output(self.channel, self.state)
 
+
     def toggleState(self):
         self.set(not self.state)
 
@@ -29,22 +48,67 @@ class Led:
         self.set(False)
 
 
-class ToggleButton:
+class ToggleState:
+    def __init__(self, starting_state, target):
+        self.state = starting_state
+        self.target = target
+
+    def toggleState(self):
+        self.state = not self.state
+
+        if self.state:
+            self.target.turnOn()
+        else:
+            self.target.turnOff()
+
+
+class Button:
     last_state=GPIO.HIGH
 
-    def __init__(self, channel, button):
+    def __init__(self, channel):
         self.channel = channel
-        self.button = button
+
+    def action(self):
+        return
 
     def stateChanged(self, state):
         if state == GPIO.LOW:
-            self.button.toggleState()
+            self.action()
 
     def stateTest(self):
         input_state = GPIO.input(self.channel)
         if input_state != self.last_state:
             self.last_state=input_state
             self.stateChanged(input_state)
+
+
+class ToggleButton(Button):
+    def __init__(self, channel, target):
+        Button.__init__(self, channel)
+        self.target = target
+
+    def action(self):
+        self.target.toggleState()
+
+
+class VideoButton(Button):
+    def __init__(self, channel, led):
+        Button.__init__(self, channel)
+        self.led = led
+        self.camera = None
+
+    def action(self):
+        if self.camera is None:
+            print("Camera is set to None.  Creating new camera.")
+            self.camera = Camera()
+            self.camera.turnOn()
+            self.led.turnOn()
+        else:
+            print("Camera is set.  Deleting camera.")
+            self.camera.turnOff()
+            self.camera.close()
+            self.camera = None
+            self.led.turnOff()
 
 
 class Application:
@@ -62,14 +126,14 @@ class Application:
         self.ledRed = Led(self.CHANNEL_LED_RED, False)
         self.ledYellow = Led(self.CHANNEL_LED_YELLOW, False)
 
-        self.toggleButton = ToggleButton(self.CHANNEL_SWITCH_MAIN, self.ledRed)
-
         self.ledRed.turnOff()
         self.ledYellow.turnOn()
 
+        self.videoButton = VideoButton(self.CHANNEL_SWITCH_MAIN, self.ledRed)
+
     def execute(self):
-        self.toggleButton.stateTest()
         self.ledYellow.toggleState()
+        self.videoButton.stateTest()
 
     def idle_loop(self):
         self.keepRunning = True
@@ -84,7 +148,7 @@ class Application:
 
         except:
             e = sys.exc_info()[0]
-            print('Caught exception: {0}'.format(e))
+            print('Caught eqxception: {0}'.format(e))
             pass
 
 
