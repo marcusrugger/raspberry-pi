@@ -125,7 +125,7 @@ class Application:
         self.ledRed.turnOff()
         self.ledYellow.turnOn()
 
-        self.videoButton = VideoButton(CHANNEL_SWITCH_MAIN. self.ledRed)
+        self.videoButton = VideoButton(self.CHANNEL_SWITCH_MAIN. self.ledRed)
 
     def execute(self):
         self.ledYellow.toggleState()
