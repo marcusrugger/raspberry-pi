@@ -84,7 +84,7 @@ class Button:
 
 class ToggleButton(Button):
     def __init__(self, channel, target):
-        Button.__init__(channel)
+        Button.__init__(self, channel)
         self.target = target
 
     def action(self):
@@ -93,7 +93,7 @@ class ToggleButton(Button):
 
 class VideoButton(Button):
     def __init__(self, channel):
-        Button.__init__(channel)
+        Button.__init__(self, channel)
 
 
 class Application:
