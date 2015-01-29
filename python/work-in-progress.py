@@ -91,9 +91,20 @@ class ToggleButton(Button):
         self.target.toggleState()
 
 
-class VideoButton(Button):
+class VideoButton(Button, led):
     def __init__(self, channel):
         Button.__init__(self, channel)
+        self.led = led
+
+    def action(self):
+        if self.camera is None:
+            self.camera = Camera()
+            self.camera.turnOn()
+            self.led.turnOn()
+        else:
+            self.camera.turnOff()
+            self.camera = None
+            self.led.turnOff()
 
 
 class Application:
@@ -108,20 +119,15 @@ class Application:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.CHANNEL_SWITCH_MAIN, GPIO.IN)
 
-        self.camera = Camera()
-
         self.ledRed = Led(self.CHANNEL_LED_RED, False)
         self.ledYellow = Led(self.CHANNEL_LED_YELLOW, False)
-
-        self.targetState = ToggleState(False, self.camera)
-
-        self.toggleButton = ToggleButton(self.CHANNEL_SWITCH_MAIN, self.targetState)
 
         self.ledRed.turnOff()
         self.ledYellow.turnOn()
 
+        self.videoButton = VideoButton(CHANNEL_SWITCH_MAIN. self.ledRed)
+
     def execute(self):
-        self.toggleButton.stateTest()
         self.ledYellow.toggleState()
 
     def idle_loop(self):
