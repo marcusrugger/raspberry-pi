@@ -69,6 +69,7 @@ class Button:
         self.channel = channel
 
     def action(self):
+        return
 
     def stateChanged(self, state):
         if state == GPIO.LOW:
