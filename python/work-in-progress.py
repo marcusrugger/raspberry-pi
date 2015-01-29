@@ -62,7 +62,7 @@ class ToggleState:
             self.target.turnOff()
 
 
-class Button
+class Button:
     last_state=GPIO.HIGH
 
     def __init__(self, channel):
