@@ -62,22 +62,37 @@ class ToggleState:
             self.target.turnOff()
 
 
-class ToggleButton:
+class Button
     last_state=GPIO.HIGH
 
-    def __init__(self, channel, target):
+    def __init__(self, channel):
         self.channel = channel
-        self.target = target
+
+    def action(self):
 
     def stateChanged(self, state):
         if state == GPIO.LOW:
-            self.target.toggleState()
+            self.action()
 
     def stateTest(self):
         input_state = GPIO.input(self.channel)
         if input_state != self.last_state:
             self.last_state=input_state
             self.stateChanged(input_state)
+
+
+class ToggleButton(Button):
+    def __init__(self, channel, target):
+        Button.__init__(channel)
+        self.target = target
+
+    def action(self):
+        self.target.toggleState()
+
+
+class VideoButton(Button):
+    def __init__(self, channel):
+        Button.__init__(channel)
 
 
 class Application:
