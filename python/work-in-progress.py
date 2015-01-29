@@ -91,8 +91,8 @@ class ToggleButton(Button):
         self.target.toggleState()
 
 
-class VideoButton(Button, led):
-    def __init__(self, channel):
+class VideoButton(Button):
+    def __init__(self, channel, led):
         Button.__init__(self, channel)
         self.led = led
 
