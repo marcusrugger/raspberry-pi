@@ -95,14 +95,18 @@ class VideoButton(Button):
     def __init__(self, channel, led):
         Button.__init__(self, channel)
         self.led = led
+        self.camera = None
 
     def action(self):
         if self.camera is None:
+            print("Camera is set to None.  Creating new camera.")
             self.camera = Camera()
             self.camera.turnOn()
             self.led.turnOn()
         else:
+            print("Camera is set.  Deleting camera.")
             self.camera.turnOff()
+            self.camera.close()
             self.camera = None
             self.led.turnOff()
 
@@ -129,6 +133,7 @@ class Application:
 
     def execute(self):
         self.ledYellow.toggleState()
+        self.videoButton.stateTest()
 
     def idle_loop(self):
         self.keepRunning = True
@@ -145,8 +150,6 @@ class Application:
             e = sys.exc_info()[0]
             print('Caught eqxception: {0}'.format(e))
             pass
-
-        self.camera.close()
 
 
 Application().run()
