@@ -2,9 +2,11 @@
 
 import logging
 
+loggingLevel = logging.WARNING
+
 # create logger with 'spam_application'
 logger = logging.getLogger('webcam')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(loggingLevel)
 
 # create file handler which logs even debug messages
 #fh = logging.FileHandler('webcam.log')
@@ -12,7 +14,7 @@ logger.setLevel(logging.DEBUG)
 
 # create console handler with a higher log level
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+ch.setLevel(loggingLevel)
 
 # create formatter and add it to the handlers
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

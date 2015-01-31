@@ -22,7 +22,7 @@ GPIO.setmode(GPIO.BCM)
 
 redLed = led.Led(CHANNEL_LED_RED, True)
 camera = camera.Camera()
-camera.turnOn()
+camera.turnOnPreview()
 
 idle = idleloop.IdleLoop()
 toggle = toggle.Toggle(redLed)
@@ -37,7 +37,7 @@ except:
     pass
 
 
-camera.turnOff()
+camera.turnOffPreview()
 camera.close()
 redLed.turnOff()
 
