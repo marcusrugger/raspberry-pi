@@ -14,6 +14,12 @@ class Toggle:
         self.logDebug()
 
 
+    def dispose(self):
+        if hasattr(self.obj.__class__, 'dispose') and callable(getattr(self.obj.__class__, 'dispose')):
+            self.log.info('Dispose object: {0}.'.format(self.obj.__class__))
+            self.obj.dispose()
+
+
     def logDebug(self):
         self.log.debug('Object: ' + str(self.obj.__class__))
         self.log.debug('Toggle: ' + str(self.toggle))

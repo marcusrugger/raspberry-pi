@@ -20,25 +20,17 @@ print("Hello world.")
 
 GPIO.setmode(GPIO.BCM)
 
-redLed = led.Led(CHANNEL_LED_RED, True)
-camera = camera.Camera()
-camera.turnOnPreview()
-
-idle = idleloop.IdleLoop()
-toggle = toggle.Toggle(redLed)
-idle.register(toggle)
+redLed = led.Led(CHANNEL_LED_RED, False)
+yellowLed = led.Led(CHANNEL_LED_YELLOW, True)
+toggle = toggle.Toggle(yellowLed)
 
 try:
-    idle.run()
+    with idleloop.IdleLoop() as idle:
+        idle.register(toggle)
+        idle.run()
 
 except:
     e = sys.exc_info()[0]
     print('Caught exception: {0}'.format(e))
-    pass
-
-
-camera.turnOffPreview()
-camera.close()
-redLed.turnOff()
 
 print("Goodbye.")

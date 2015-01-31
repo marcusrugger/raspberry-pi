@@ -2,7 +2,7 @@
 
 import logging
 
-loggingLevel = logging.WARNING
+loggingLevel = logging.INFO
 
 # create logger with 'spam_application'
 logger = logging.getLogger('webcam')
