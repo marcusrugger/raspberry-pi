@@ -1,15 +1,19 @@
 #!/usr/bin/python3
 
 import RPi.GPIO as GPIO
-import picamera
-import time
-import sys
+import logging
 
 
 class Led:
     channel=2
 
     def __init__(self, channel, state):
+        # 'application' code
+        self.logger = logging.getLogger('webcam.led')
+        self.logger.debug('debug message')
+
+        #logging.info('%s.%s: [channel=%d]', __class__, __name__, channel)
+
         self.channel = channel
         GPIO.setup(self.channel, GPIO.OUT)
         self.set(state)

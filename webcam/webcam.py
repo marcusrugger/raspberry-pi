@@ -4,9 +4,12 @@ import RPi.GPIO as GPIO
 import sys
 import time
 import camera
+import webcam_logger
 import led
 import idleloop
 import toggle
+
+
 
 CHANNEL_SWITCH_MAIN=2
 CHANNEL_SWITCH_SECONDARY=3
