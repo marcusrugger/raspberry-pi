@@ -1,16 +1,54 @@
 #!/usr/bin/python3
 
-import button
-import led
-import camera
+from button import Button
+from camera import Camera
 
 
-class CameraButton(button.Button):
+class CameraButton(Button):
 
     def __init__(self, channel, led):
-        button.Button.__init__(self, channel)
+        Button.__init__(self, channel)
+        self.isCameraOn = False
         self.led = led
-        self.camera = None
+
+
+    def dispose(self):
+        self.log.info('Dispose')
+        Camera.destroy()
+        if self.led    is not None : self.led.dispose()
+
+
+    def action(self):
+        self.isCameraOn = not self.isCameraOn
+        if self.isCameraOn:
+            self._actionTurnOnCamera()
+        else:
+            self._actionTurnOffCamera()
+
+
+    def _actionTurnOnCamera(self):
+        self.log.info('Turn on camera')
+        self.led.turnOn()
+        Camera.instance().turnOnPreview()
+
+
+    def _actionTurnOffCamera(self):
+        self.log.info('Turn off camera')
+        self.led.turnOff()
+        Camera.destroy()
+
+
+
+class CameraButtonMode(Button):
+
+    def __init__(self, channel, led):
+        Button.__init__(self, channel)
+        self.led = led
+        self.camera = Camera()
+        self.camera.led = False
+        self.toggle = True
+        self.led.turnOn()
+        self._actionMode2()
 
 
     def dispose(self):
@@ -20,21 +58,22 @@ class CameraButton(button.Button):
 
 
     def action(self):
-        if self.camera is None:
-            self._actionCameraOn()
+        self.toggle = not self.toggle
+        if self.toggle:
+            self._actionMode1()
         else:
-            self._actionCameraOff()
+            self._actionMode2()
 
 
-    def _actionCameraOn(self):
-        self.log.info('Turn on camera')
-        self.led.turnOn()
-        self.camera = camera.Camera()
+    def _actionMode1(self):
+        self.log.info('Set camera to mode 1')
+        self.camera.turnOffPreview()
+        self.camera.configureHighRes()
         self.camera.turnOnPreview()
 
 
-    def _actionCameraOff(self):
-        self.log.info('Turn off camera')
-        self.led.turnOff()
-        self.camera.dispose()
-        self.camera = None
+    def _actionMode2(self):
+        self.log.info('Set camera to mode 2')
+        self.camera.turnOffPreview()
+        self.camera.configureLowRes()
+        self.camera.turnOnPreview()
