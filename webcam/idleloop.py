@@ -25,7 +25,6 @@ class IdleLoop:
         self.log = logging.getLogger('webcam.IdleLoop')
         self.log.info('Instantiate idle loop.')
 
-        self.sleep = IdleLoop.RESOLUTION
         self.isDone = False
         self.registrants = []
 
