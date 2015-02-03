@@ -32,18 +32,18 @@ class Button:
 
     def statePressed(self):
         self.log.info('Button (channel=' + str(self.channel) + '): button pressed')
-        self.action()
+        self.actionPressed()
 
 
     def stateReleased(self):
         self.log.info('Button (channel=' + str(self.channel) + '): button released')
-        actionReleased()
+        self.actionReleased()
 
 
     def stateChanged(self, new_state):
         if new_state == GPIO.LOW:
             self.statePressed()
-        else if new_state == GPIO.HIGH:
+        elif new_state == GPIO.HIGH:
             self.stateReleased()
         else:
             self.log.warning('Button (channel=' + str(self.channel) + '): unknown state')
