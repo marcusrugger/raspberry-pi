@@ -4,13 +4,28 @@ import time
 import logging
 
 
+class Countdown:
+    def __init__(self, countdown):
+        self.countdown_reset = countdown
+        self.countdown = countdown
+
+
+    def tick(self):
+        self.countdown = self.countdown - 1
+        if self.countdown < 1:
+            self.countdown = self.countdown_reset
+            self.execute()
+
+
 class IdleLoop:
+    TICKS_PER_SECOND = 10
+    RESOLUTION = (1 / TICKS_PER_SECOND)
 
     def __init__(self):
         self.log = logging.getLogger('webcam.IdleLoop')
         self.log.info('Instantiate idle loop.')
 
-        self.sleep = 0.2
+        self.sleep = IdleLoop.RESOLUTION
         self.isDone = False
         self.registrants = []
 
