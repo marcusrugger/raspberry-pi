@@ -62,6 +62,9 @@ class IdleLoop:
 
 
     def run(self):
+        timestamp = time.clock()
         while not self.isDone:
-            time.sleep(self.sleep)
+            sleep_time = IdleLoop.RESOLUTION - (time.clock() - timestamp)
+            if sleep_time > 0 : time.sleep(sleep_time)
+            timestamp = time.clock()
             self.tick()
