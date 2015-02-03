@@ -4,11 +4,11 @@ import RPi.GPIO as GPIO
 import sys
 import time
 import logging
-import webcam_logger
-import led
-import idleloop
-import toggle
-import camera_button
+import webcam_logger as Logger
+from idleloop import IdleLoop
+from led import Led
+from toggle import Toggle
+from camera_button import CameraButton as CameraButton
 
 
 CHANNEL_SWITCH_MAIN=2
@@ -20,20 +20,18 @@ print("Hello world.")
 
 GPIO.setmode(GPIO.BCM)
 
-redLed = led.Led(CHANNEL_LED_RED, False)
-yellowLed = led.Led(CHANNEL_LED_YELLOW, True)
-toggle = toggle.Toggle(yellowLed)
-cameraButton = camera_button.CameraButton(CHANNEL_SWITCH_MAIN, redLed)
+redLed = Led(CHANNEL_LED_RED, False)
+yellowLed = Led(CHANNEL_LED_YELLOW, True)
 
 try:
-    with idleloop.IdleLoop() as idle:
-        idle.register(toggle)
-        idle.register(cameraButton)
+    with IdleLoop() as idle:
+        idle.register(Toggle(yellowLed))
+        idle.register(CameraButton(CHANNEL_SWITCH_MAIN, redLed))
         idle.run()
 
 except:
     e = sys.exc_info()[0]
     print('Caught exception: {0}'.format(e))
-    webcam_logger.logger.exception('Caught exception')
+    Logger.logger.exception('Caught exception')
 
 print("Goodbye.")
