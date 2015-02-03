@@ -22,14 +22,31 @@ class Button:
             self.log.debug('Button state:   ' + str(self.last_state))
 
 
-    def action(self):
-        return
+    def actionPressed(self):
+        pass
 
 
-    def stateChanged(self, state):
-        if state == GPIO.LOW:
-            self.log.info('Button (channel=' + str(self.channel) + '): excecute action')
-            self.action()
+    def actionReleased(self):
+        pass
+
+
+    def statePressed(self):
+        self.log.info('Button (channel=' + str(self.channel) + '): button pressed')
+        self.action()
+
+
+    def stateReleased(self):
+        self.log.info('Button (channel=' + str(self.channel) + '): button released')
+        actionReleased()
+
+
+    def stateChanged(self, new_state):
+        if new_state == GPIO.LOW:
+            self.statePressed()
+        else if new_state == GPIO.HIGH:
+            self.stateReleased()
+        else:
+            self.log.warning('Button (channel=' + str(self.channel) + '): unknown state')
 
 
     def tick(self):

@@ -18,7 +18,7 @@ class CameraButton(Button):
         if self.led    is not None : self.led.dispose()
 
 
-    def action(self):
+    def actionPressed(self):
         self.isCameraOn = not self.isCameraOn
         if self.isCameraOn:
             self._actionTurnOnCamera()
