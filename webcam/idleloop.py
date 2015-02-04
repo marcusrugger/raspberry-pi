@@ -63,6 +63,7 @@ class IdleLoop:
 
 
     def run(self):
+        self.log.info('Run idle loop.')
         timestamp = time.time()
         while not self.isDone:
             sleep_time = IdleLoop.RESOLUTION - (time.time() - timestamp)
