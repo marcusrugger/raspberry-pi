@@ -5,14 +5,14 @@ import logging
 
 
 class Countdown:
-    def __init__(self, countdown):
-        self.countdown_reset = countdown
-        self.countdown = countdown
+    def __init__(self, frequency):
+        self.countdown_reset = IdleLoop.TICKS_PER_SECOND / frequency
+        self.countdown = self.countdown_reset
 
 
     def tick(self):
         self.countdown = self.countdown - 1
-        if self.countdown < 1:
+        if self.countdown <= 0:
             self.countdown = self.countdown_reset
             self.execute()
 
@@ -33,15 +33,15 @@ class IdleLoop:
         return self
 
 
+    def __exit__(self, type, value, traceback):
+        self.log.info('Dispose registrants.')
+        for registrant in self.registrants : self.disposeOf(registrant)
+
+
     def disposeOf(self, obj):
         if hasattr(obj.__class__, 'dispose') and callable(getattr(obj.__class__, 'dispose')):
             self.log.info('Dispose object: {0}.'.format(obj.__class__))
             obj.dispose()
-
-
-    def __exit__(self, type, value, traceback):
-        self.log.info('Dispose registrants.')
-        for registrant in self.registrants : self.disposeOf(registrant)
 
 
     def setDone(self, flag):

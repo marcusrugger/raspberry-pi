@@ -57,7 +57,7 @@ class CameraButtonMode(Button):
         if self.led    is not None : self.led.dispose()
 
 
-    def action(self):
+    def actionPressed(self):
         self.toggle = not self.toggle
         if self.toggle:
             self._actionMode1()

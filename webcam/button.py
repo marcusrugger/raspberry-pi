@@ -2,14 +2,16 @@
 
 import RPi.GPIO as GPIO
 import logging
+from idleloop import Countdown
 
 
-class Button:
+class Button(Countdown):
 
     def __init__(self, channel):
+        Countdown.__init__(self, 10)
+
         self.log = logging.getLogger('webcam.Button')
         self.log.info('Instantiate button (channel = ' + str(channel) + ': ' + str(self.__class__))
-
         self.channel = channel
         self.last_state=GPIO.HIGH
 
@@ -30,21 +32,21 @@ class Button:
         pass
 
 
-    def statePressed(self):
-        self.log.info('Button (channel=' + str(self.channel) + '): button pressed')
+    def stateLow(self):
+        self.log.info('Button (channel=' + str(self.channel) + '): button state low')
         self.actionPressed()
 
 
-    def stateReleased(self):
-        self.log.info('Button (channel=' + str(self.channel) + '): button released')
+    def stateHigh(self):
+        self.log.info('Button (channel=' + str(self.channel) + '): button state high')
         self.actionReleased()
 
 
     def stateChanged(self, new_state):
         if new_state == GPIO.LOW:
-            self.statePressed()
+            self.stateLow()
         elif new_state == GPIO.HIGH:
-            self.stateReleased()
+            self.stateHigh()
         else:
             self.log.warning('Button (channel=' + str(self.channel) + '): unknown state')
 

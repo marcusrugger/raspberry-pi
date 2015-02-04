@@ -2,12 +2,11 @@
 
 import logging
 from idleloop import Countdown
-from idleloop import IdleLoop
 
 
 class Toggle(Countdown):
     def __init__(self, obj):
-        Countdown.__init__(self, IdleLoop.TICKS_PER_SECOND)
+        Countdown.__init__(self, 1)
         self.log = logging.getLogger('webcam.Toggle')
         self.log.info('Instantiate toggle.')
 
