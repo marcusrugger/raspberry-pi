@@ -7,7 +7,7 @@ import logging
 import webcam_logger as Logger
 from idleloop import IdleLoop
 from led import Led
-from toggle import Toggle
+from toggle_led import ToggleLed
 from camera_button import CameraButton as CameraButton
 
 
@@ -21,11 +21,11 @@ print("Hello world.")
 GPIO.setmode(GPIO.BCM)
 
 redLed = Led(CHANNEL_LED_RED, False)
-yellowLed = Led(CHANNEL_LED_YELLOW, True)
+yellowLed = ToggleLed(1, CHANNEL_LED_YELLOW, True)
 
 try:
     with IdleLoop() as idle:
-        idle.register(Toggle(yellowLed))
+        idle.register(yellowLed)
         idle.register(CameraButton(CHANNEL_SWITCH_MAIN, redLed))
         idle.run()
 
