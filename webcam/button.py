@@ -8,7 +8,7 @@ from idleloop import Countdown
 class Button(Countdown):
 
     def __init__(self, channel):
-        Countdown.__init__(self, 10)
+        Countdown.__init__(self, 0.1)
 
         self.log = logging.getLogger('webcam.Button')
         self.log.info('Instantiate button (channel = ' + str(channel) + ': ' + str(self.__class__))
@@ -51,7 +51,7 @@ class Button(Countdown):
             self.log.warning('Button (channel=' + str(self.channel) + '): unknown state')
 
 
-    def tick(self):
+    def execute(self):
         input_state = GPIO.input(self.channel)
         if input_state != self.last_state:
             self.last_state=input_state

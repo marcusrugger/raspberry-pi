@@ -5,15 +5,14 @@ import logging
 
 
 class Countdown:
-    def __init__(self, frequency):
-        self.countdown_reset = IdleLoop.TICKS_PER_SECOND / frequency
-        self.countdown = self.countdown_reset
+    def __init__(self, sleep):
+        self.timestamp = time.time()
+        self.sleep = sleep
 
 
-    def tick(self):
-        self.countdown = self.countdown - 1
-        if self.countdown <= 0:
-            self.countdown = self.countdown_reset
+    def tick(self, timestamp):
+        if timestamp - self.timestamp >= self.sleep:
+            self.timestamp = timestamp
             self.execute()
 
 
@@ -49,21 +48,24 @@ class IdleLoop:
 
 
     def register(self, registrant):
-        self.registrants.append(registrant)
+        if hasattr(registrant.__class__, 'tick') and callable(getattr(registrant.__class__, 'tick')):
+            self.registrants.append(registrant)
+        else:
+            self.log.error('register: registrant must have tick() method: {0}'.format(registrant.__class__))
 
 
     def unregister(self, registrant):
         self.registrants.remove(registrant)
 
 
-    def tick(self):
-        for registrant in self.registrants : registrant.tick()
+    def tick(self, timestamp):
+        for registrant in self.registrants : registrant.tick(timestamp)
 
 
     def run(self):
-        timestamp = time.clock()
+        timestamp = time.time()
         while not self.isDone:
-            sleep_time = IdleLoop.RESOLUTION - (time.clock() - timestamp)
+            sleep_time = IdleLoop.RESOLUTION - (time.time() - timestamp)
             if sleep_time > 0 : time.sleep(sleep_time)
-            timestamp = time.clock()
-            self.tick()
+            timestamp = time.time()
+            self.tick(timestamp)
