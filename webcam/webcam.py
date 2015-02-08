@@ -20,13 +20,10 @@ print("Hello world.")
 
 GPIO.setmode(GPIO.BCM)
 
-redLed = Led(CHANNEL_LED_RED, False)
-yellowLed = ToggleLed(1, CHANNEL_LED_YELLOW, True)
-
 try:
     with IdleLoop() as idle:
-        idle.register(yellowLed)
-        idle.register(CameraButton(CHANNEL_SWITCH_MAIN, redLed))
+        idle.register(ToggleLed(1, CHANNEL_LED_YELLOW, True))
+        idle.register(CameraButton(CHANNEL_SWITCH_MAIN, Led(CHANNEL_LED_RED, False)))
         idle.run()
 
 except:

@@ -4,6 +4,9 @@ import logging
 
 loggingLevel = logging.INFO
 
+#FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+#logging.basicConfig(format=FORMAT)
+
 # create logger with 'spam_application'
 logger = logging.getLogger('webcam')
 logger.setLevel(loggingLevel)
@@ -17,7 +20,8 @@ ch = logging.StreamHandler()
 ch.setLevel(loggingLevel)
 
 # create formatter and add it to the handlers
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('[ %(levelname)5s - %(filename)16s:%(lineno)3s - %(funcName)16s ] %(message)s')
 #fh.setFormatter(formatter)
 ch.setFormatter(formatter)
 
