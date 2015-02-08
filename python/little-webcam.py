@@ -36,6 +36,15 @@ def wait_for_connection(camera):
     start_recording(camera, server_socket, connection)
 
 
+def sleep():
+    print('Sleep for two minutes.')
+    for a in range(120):
+        time.sleep(1)
+        if a is 60 : print
+        sys.stdout.write('.')
+        sys.stdout.flush()
+    print
+
 
 while True:
     try:
@@ -56,8 +65,8 @@ while True:
     except socket.error as e:
         print('Caught exception: {0}'.format(e))
 
-    print('Sleep for two minutes.')
-    time.sleep(120)
+    sleep()
+
 
 print("Bye bye")
 
