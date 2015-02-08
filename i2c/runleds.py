@@ -4,54 +4,28 @@ import time
 import sys
 from i2cbus import I2cBus
 from MCP9808 import MCP9808 as TemperatureSensor
+from HTU21D import HTU21D as HumiditySensor
+from MPL3115A2 import MPL3115A2 as BarometricSensor
 from HT16K33 import HT16K33 as DisplayController
+from MCP23017 import MCP23017 as PortExpander
 
-
-PORT_EXPANDER   = 0x20
-TEMP_SENSOR     = 0x18
-HUMIDITY_SENSOR = 0x40
-DISPLAY_ADDRESS = 0x70
 
 bus = I2cBus(1)
 
+thermometer = TemperatureSensor(bus)
+hygrometer  = HumiditySensor(bus)
+barometer   = BarometricSensor(bus)
 
-display = DisplayController(bus, DISPLAY_ADDRESS)
+ports = PortExpander(bus)
+ports.writePortA(0x00)
+
+display = DisplayController(bus)
+display.turnOnOscillator()
 display.turnOnDisplay()
 display.setDimming(0)
 
-#for a in range(10000) : display.writeNumber(a)
-
-
-bus.write_byte_data(PORT_EXPANDER, 0x00, 0x00)
-bus.write_byte_data(PORT_EXPANDER, 0x01, 0x00)
-
-animation = [   0b00000001,
-                0b01000000,
-                0b00001000,
-                0b00000100,
-                0b00000010,
-                0b01000000,
-                0b00010000,
-                0b00100000 ]
-
-numbers = [ 0b00111111,
-            0b00011000,
-            0b01101101,
-            0b01111100,
-            0b01011010,
-            0b01110110,
-            0b01110111,
-            0b00011100,
-            0b01111111,
-            0b01111110 ]
-
-sensorTemperature = TemperatureSensor(bus, TEMP_SENSOR)
-
 for loop in range(1024):
-    t = sensorTemperature.read_sensor()
-    sensorTemperature.print_temperature(t)
+    t = thermometer.read_sensor()
+    thermometer.print_temperature(t)
     display.writeTemperature(t['fahrenheit'])
     time.sleep(60)
-
-bus.write_byte_data(PORT_EXPANDER, 0x12, 0x00)
-bus.write_byte_data(PORT_EXPANDER, 0x13, 0x00)

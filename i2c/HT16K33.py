@@ -1,10 +1,14 @@
+# LED Display Controller
 
 
 class HT16K33(object):
-    REGISTER_DIGIT_1 = 0x00
-    REGISTER_DIGIT_2 = 0x02
-    REGISTER_DIGIT_3 = 0x06
-    REGISTER_DIGIT_4 = 0x08
+    BASE_ADDRESS = 0x70
+
+    REGISTER_DIGIT_1    = 0x00
+    REGISTER_DIGIT_2    = 0x02
+    REGISTER_DIGIT_3    = 0x06
+    REGISTER_DIGIT_4    = 0x08
+    REGISTER_COLON      = 0x04
 
     character_set = [   0x3f,   # 0
                         0x06,   # 1
@@ -18,15 +22,25 @@ class HT16K33(object):
                         0x6f    # 9
                     ]
 
-    def __init__(self, bus, address):
+    def __init__(self, bus, address=BASE_ADDRESS):
         self.bus = bus
         self.address = address
-        self.bus.write_byte_data(self.address, 0x21, 0x00)
-        self.bus.write_byte_data(self.address, 0x00, 0x7f)
-        self.bus.write_byte_data(self.address, 0x02, 0x7f)
-        self.bus.write_byte_data(self.address, 0x04, 0x00)
-        self.bus.write_byte_data(self.address, 0x06, 0x7f)
-        self.bus.write_byte_data(self.address, 0x08, 0x7f)
+
+        self.turnOffOscillator()
+        self.turnOffDisplay()
+        self.setDimming(0)
+
+        self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_1, 0x00)
+        self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_2, 0x00)
+        self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_3, 0x00)
+        self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_4, 0x00)
+        self.bus.write_byte_data(self.address, HT16K33.REGISTER_COLON, 0x00)
+
+    def turnOnOscillator(self):
+        self.bus.write_byte_data(self.address, 0x21)
+
+    def turnOffOscillator(self):
+        self.bus.write_byte_data(self.address, 0x20)
 
     def turnOnDisplay(self):
         self.bus.write_byte_data(self.address, 0x81)
@@ -35,10 +49,8 @@ class HT16K33(object):
         self.bus.write_byte_data(self.address, 0x80)
 
     def setDimming(self, dim):
-        if dim < 0:
-            dim = 0
-        elif dim > 15:
-            dim = 15
+        if   dim <  0 : dim = 0
+        elif dim > 15 : dim = 15
         self.bus.write_byte_data(self.address, 0xe0 | int(dim))
 
     def writeNumber(self, number):
