@@ -1,7 +1,8 @@
 # LED Display Controller
+from i2cdevice import I2cDevice
 
 
-class HT16K33(object):
+class HT16K33(I2cDevice):
     BASE_ADDRESS = 0x70
 
     REGISTER_DIGIT_1    = 0x00
@@ -23,35 +24,38 @@ class HT16K33(object):
                     ]
 
     def __init__(self, bus, address=BASE_ADDRESS):
-        self.bus = bus
-        self.address = address
+        I2cDevice.__init__(self, bus, address)
 
-        self.turnOffOscillator()
         self.turnOffDisplay()
+        self.turnOffOscillator()
         self.setDimming(0)
 
-        self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_1, 0x00)
-        self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_2, 0x00)
-        self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_3, 0x00)
-        self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_4, 0x00)
-        self.bus.write_byte_data(self.address, HT16K33.REGISTER_COLON, 0x00)
+        I2cDevice.write_byte_data(self, HT16K33.REGISTER_DIGIT_1, 0x00)
+        I2cDevice.write_byte_data(self, HT16K33.REGISTER_DIGIT_2, 0x00)
+        I2cDevice.write_byte_data(self, HT16K33.REGISTER_DIGIT_3, 0x00)
+        I2cDevice.write_byte_data(self, HT16K33.REGISTER_DIGIT_4, 0x00)
+        I2cDevice.write_byte_data(self, HT16K33.REGISTER_COLON, 0x00)
+
+    def dispose(self):
+        self.turnOffDisplay()
+        self.turnOffOscillator()
 
     def turnOnOscillator(self):
-        self.bus.write_byte_data(self.address, 0x21)
+        I2cDevice.write_byte_data(self, 0x21)
 
     def turnOffOscillator(self):
-        self.bus.write_byte_data(self.address, 0x20)
+        I2cDevice.write_byte_data(self, 0x20)
 
     def turnOnDisplay(self):
-        self.bus.write_byte_data(self.address, 0x81)
+        I2cDevice.write_byte_data(self, 0x81)
 
     def turnOffDisplay(self):
-        self.bus.write_byte_data(self.address, 0x80)
+        I2cDevice.write_byte_data(self, 0x80)
 
     def setDimming(self, dim):
         if   dim <  0 : dim = 0
         elif dim > 15 : dim = 15
-        self.bus.write_byte_data(self.address, 0xe0 | int(dim))
+        I2cDevice.write_byte_data(self, 0xe0 | int(dim))
 
     def writeNumber(self, number):
         d4 = number % 10
@@ -87,23 +91,23 @@ class HT16K33(object):
         if print_zeros:
             self._writeDigit(HT16K33.REGISTER_DIGIT_1, d1, d1Dot)
         else:
-            self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_1, 0x00)
+            I2cDevice.write_byte_data(self, HT16K33.REGISTER_DIGIT_1, 0x00)
 
         print_zeros = print_zeros or d2 > 0 or d2Dot
         if print_zeros:
             self._writeDigit(HT16K33.REGISTER_DIGIT_2, d2, d2Dot)
         else:
-            self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_2, 0x00)
+            I2cDevice.write_byte_data(self, HT16K33.REGISTER_DIGIT_2, 0x00)
 
         print_zeros = print_zeros or d3 > 0 or d3Dot
         if print_zeros:
             self._writeDigit(HT16K33.REGISTER_DIGIT_3, d3, d3Dot)
         else:
-            self.bus.write_byte_data(self.address, HT16K33.REGISTER_DIGIT_3, 0x00)
+            I2cDevice.write_byte_data(self, HT16K33.REGISTER_DIGIT_3, 0x00)
 
         self._writeDigit(HT16K33.REGISTER_DIGIT_4, d4, d4Dot)
 
     def _writeDigit(self, position, number, dotOn=False):
         bitmap = HT16K33.character_set[number]
         if dotOn : bitmap = bitmap | 0x80
-        self.bus.write_byte_data(self.address, position, bitmap)
+        I2cDevice.write_byte_data(self, position, bitmap)
