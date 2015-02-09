@@ -17,6 +17,9 @@ thermometer = TemperatureSensor(bus)
 hygrometer  = HumiditySensor(bus)
 barometer   = BarometricSensor(bus)
 
+#hygrometer.read_humidity()
+#sys.exit()
+
 ports = PortExpander(bus)
 ports.writePortA(0x00)
 

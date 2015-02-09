@@ -41,21 +41,21 @@ class HT16K33(I2cDevice):
         self.turnOffOscillator()
 
     def turnOnOscillator(self):
-        I2cDevice.write_byte_data(self, 0x21)
+        I2cDevice.write_byte(self, 0x21)
 
     def turnOffOscillator(self):
-        I2cDevice.write_byte_data(self, 0x20)
+        I2cDevice.write_byte(self, 0x20)
 
     def turnOnDisplay(self):
-        I2cDevice.write_byte_data(self, 0x81)
+        I2cDevice.write_byte(self, 0x81)
 
     def turnOffDisplay(self):
-        I2cDevice.write_byte_data(self, 0x80)
+        I2cDevice.write_byte(self, 0x80)
 
     def setDimming(self, dim):
         if   dim <  0 : dim = 0
         elif dim > 15 : dim = 15
-        I2cDevice.write_byte_data(self, 0xe0 | int(dim))
+        I2cDevice.write_byte(self, 0xe0 | int(dim))
 
     def writeNumber(self, number):
         d4 = number % 10
