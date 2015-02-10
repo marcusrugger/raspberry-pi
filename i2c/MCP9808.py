@@ -1,22 +1,22 @@
 # Thermometer
 import time
-from i2cdevice import I2cDevice
 
 
 def swapBytes(word):
     return ((word & 0x00ff) << 8) + ((word & 0xff00) >> 8)
 
 
-class MCP9808(I2cDevice):
+class MCP9808(object):
     BASE_ADDRESS    = 0x18
 
     REGISTER_AMBIENT_TEMPERATURE    = 0x05
 
-    def __init__(self, bus, address=BASE_ADDRESS):
-        I2cDevice.__init__(self, bus, address)
+    def __init__(self, bus):
+        self.i2c = bus
 
     def _read_sensor(self):
-        return I2cDevice.read_word_data(self, MCP9808.REGISTER_AMBIENT_TEMPERATURE)
+        with self.i2c as bus : rv = bus.readWordFromRegister(MCP9808.REGISTER_AMBIENT_TEMPERATURE)
+        return rv
 
     def read_sensor(self):
         register    = self._read_sensor()

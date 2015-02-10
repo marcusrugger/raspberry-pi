@@ -3,27 +3,23 @@
 import time
 import sys
 from classes.idleloop import IdleLoop
-from i2cbus import I2cBus
 from MCP9808 import MCP9808 as TemperatureSensor
 from HTU21D import HTU21D as HumiditySensor
 from MPL3115A2 import MPL3115A2 as BarometricSensor
 from HT16K33 import HT16K33 as DisplayController
 from MCP23017 import MCP23017 as PortExpander
+from py2cbus import i2c
 
 
-bus = I2cBus(1)
+thermometer = TemperatureSensor(i2c(1, TemperatureSensor.BASE_ADDRESS))
+hygrometer  = HumiditySensor(i2c(1, HumiditySensor.BASE_ADDRESS))
+barometer   = BarometricSensor(i2c(1, BarometricSensor.BASE_ADDRESS))
 
-thermometer = TemperatureSensor(bus)
-hygrometer  = HumiditySensor(bus)
-barometer   = BarometricSensor(bus)
 
-#hygrometer.read_humidity()
-#sys.exit()
-
-ports = PortExpander(bus)
+ports = PortExpander(i2c(1, PortExpander.BASE_ADDRESS))
 ports.writePortA(0x00)
 
-display = DisplayController(bus)
+display = DisplayController(i2c(1, DisplayController.BASE_ADDRESS))
 display.turnOnOscillator()
 display.turnOnDisplay()
 display.setDimming(0)
@@ -32,6 +28,10 @@ for loop in range(1024):
     t = thermometer.read_sensor()
     thermometer.print_temperature(t)
     display.writeTemperature(t['fahrenheit'])
+
+    h = hygrometer.read_sensor()
+    print("Humidity: {:5.1f}, Temperature: {:6.1f}".format(h['humidity'], h['fahrenheit']))
+
     for sleep in range(600):
         portb = ports.readPortB()
         if (portb & 0x0f) > 0 : print("Button pressed!: 0x{:2x}".format(portb))
