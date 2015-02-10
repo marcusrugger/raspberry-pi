@@ -34,7 +34,7 @@ class HT16K33(object):
             bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_2, 0x00)
             bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_3, 0x00)
             bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_4, 0x00)
-            bus.writeByteToRegister(HT16K33.REGISTER_COLON, 0x00)
+            bus.writeByteToRegister(HT16K33.REGISTER_COLON,   0x00)
 
     def dispose(self):
         self.turnOffDisplay()

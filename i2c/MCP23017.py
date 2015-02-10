@@ -18,12 +18,10 @@ class MCP23017(object):
         with self.i2c as bus:
             bus.writeByteToRegister(MCP23017.REGISTER_IODIRA, 0x00)
             bus.writeByteToRegister(MCP23017.REGISTER_IODIRB, 0xff)
-            bus.writeByteToRegister(MCP23017.REGISTER_GPPUB, 0xff)
+            bus.writeByteToRegister(MCP23017.REGISTER_GPPUB,  0xff)
 
             gppua = bus.readByteFromRegister(MCP23017.REGISTER_GPPUA)
             gppub = bus.readByteFromRegister(MCP23017.REGISTER_GPPUB)
-
-        print("gppub = 0x{:2x}".format(gppub))
 
     def dispose(self):
         with self.i2c as bus:
