@@ -14,6 +14,9 @@ class MCP9808(object):
     def __init__(self, bus):
         self.i2c = bus
 
+    def dispose(self):
+        pass
+
     def _read_sensor(self):
         with self.i2c as bus : rv = bus.readWordFromRegister(MCP9808.REGISTER_AMBIENT_TEMPERATURE)
         return rv

@@ -9,6 +9,9 @@ class HTU21D(object):
     def __init__(self, bus):
         self.i2c = bus
 
+    def dispose(self):
+        pass
+
     def _isValid(self, word, crc):
         return True
 
