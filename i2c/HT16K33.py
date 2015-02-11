@@ -23,7 +23,7 @@ class HT16K33(object):
                     ]
 
     def __init__(self, device):
-        self.device = bus
+        self.device = device
 
         self.turnOffDisplay()
         self.turnOffOscillator()
