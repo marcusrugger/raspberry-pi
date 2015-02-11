@@ -57,6 +57,9 @@ class HT16K33(object):
         elif dim > 15 : dim = 15
         with self.device as bus : bus.writeByte(0xe0 | int(dim))
 
+    def setColon(self, flag):
+        with self.device as bus : bus.writeByteToRegister(HT16K33.REGISTER_COLON, 0xff if flag else 0x00)
+
     def writeNumber(self, number):
         d4 = number % 10
 

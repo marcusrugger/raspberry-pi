@@ -2,38 +2,40 @@ import classes.idleloop as idleloop
 
 
 class Presenter(idleloop.Countdown):
-    def __init__(self, sleep, poller, ledbank):
+    def __init__(self, sleep, poller, ledbank, display):
         idleloop.Countdown.__init__(self, sleep)
 
         self.poller     = poller
         self.ledbank    = ledbank
-        self.mode       = 1
+        self.display    = display
+        self.mode       = 0
 
     def dispose(self):
         self.ledbank.dispose()
 
     def execute(self):
-        if self.mode is 1:
-            self.mode = self.mode1()
-        elif self.mode is 2:
-            self.mode = self.mode2()
-        elif self.mode is 3:
-            self.mode = self.mode3()
-        elif self.mode is 4:
-            self.mode = self.mode4()
+        self.mode = self.mode + 1
+        if self.mode > 4 : self.mode = 1
 
-    def mode1(self):
+        if   self.mode is 1 : self.modeTemperature()
+        elif self.mode is 2 : self.modeHumidity()
+        elif self.mode is 3 : self.modeBarometer()
+        elif self.mode is 4 : self.modeTime()
+
+    def modeTemperature(self):
+        value = self.poller().temperature()
+        self.display.writeFixedPoint(value)
         self.ledbank.turnOnLed1()
-        return 2
 
-    def mode2(self):
+    def modeHumidity(self):
+        value = self.poller().humidity()
+        self.display.writeFixedPoint(t)
         self.ledbank.turnOnLed2()
-        return 3
 
-    def mode3(self):
+    def modeBarometer(self):
+        value = self.poller().pressure()
+        self.display.writeFixedPoint(t)
         self.ledbank.turnOnLed3()
-        return 4
 
-    def mode4(self):
+    def modeTime(self):
         self.ledbank.turnOnLed4()
-        return 1

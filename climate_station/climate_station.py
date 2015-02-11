@@ -22,7 +22,7 @@ def setupLogging():
     #logging.basicConfig(format=FORMAT)
 
     # create logger with 'spam_application'
-    logger = logging.getLogger('webcam')
+    logger = logging.getLogger('climate_station')
     logger.setLevel(loggingLevel)
 
     # create file handler which logs even debug messages
