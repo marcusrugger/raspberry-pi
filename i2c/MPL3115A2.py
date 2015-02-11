@@ -10,5 +10,5 @@ class MPL3115A2(object):
     def dispose(self):
         pass
 
-    def read_sensor():
+    def read_sensor(self):
         return { "pressure": 0.0 }

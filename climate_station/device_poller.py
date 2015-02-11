@@ -18,9 +18,9 @@ class DevicePoller(idleloop.Countdown):
         self.barometer.dispose()
 
     def execute(self):
-        self.temperature    = thermometer.read_sensor()
-        self.humidity       = hygrometer.read_sensor()
-        self.pressure       = barometer.read_sensor()
+        self.temperature    = self.thermometer.read_sensor()
+        self.humidity       = self.hygrometer.read_sensor()
+        self.pressure       = self.barometer.read_sensor()
 
     def temperature(self):
         return self.temperature['fahrenheit']

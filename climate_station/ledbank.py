@@ -1,12 +1,16 @@
 # led bank
+import logging
 
 
 class LedBank(object):
     def __init__(self, ports):
         self.ports = ports
         self._setLeds(0x00)
+        self.log = logging.getLogger('webcam.LedBank')
+        self.log.info('Instantiate LED bank.')
 
     def dispose(self):
+        self.log.debug('Dispose LedBank.')
         self._setLeds(0x00)
 
     def _setLeds(self, bitmap):
