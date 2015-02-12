@@ -9,9 +9,11 @@ class LogManager(object):
     def __init__(self):
         pass
 
+    @staticmethod
     def setName(name):
         LogManager.name = name
 
+    @staticmethod
     def setupLogging(name):
         LogManager.setName(name)
         loggingLevel = logging.INFO
