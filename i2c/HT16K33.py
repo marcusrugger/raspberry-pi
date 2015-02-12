@@ -22,14 +22,14 @@ class HT16K33(object):
                         0x6f    # 9
                     ]
 
-    def __init__(self, bus):
-        self.i2c = bus
+    def __init__(self, device):
+        self.device = device
 
         self.turnOffDisplay()
         self.turnOffOscillator()
-        self.setDimming(0)
+        self.setDimming(15)
 
-        with self.i2c as bus:
+        with self.device as bus:
             bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_1, 0x00)
             bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_2, 0x00)
             bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_3, 0x00)
@@ -41,21 +41,24 @@ class HT16K33(object):
         self.turnOffOscillator()
 
     def turnOnOscillator(self):
-        with self.i2c as bus : bus.writeByte(0x21)
+        with self.device as bus : bus.writeByte(0x21)
 
     def turnOffOscillator(self):
-        with self.i2c as bus : bus.writeByte(0x20)
+        with self.device as bus : bus.writeByte(0x20)
 
     def turnOnDisplay(self):
-        with self.i2c as bus : bus.writeByte(0x81)
+        with self.device as bus : bus.writeByte(0x81)
 
     def turnOffDisplay(self):
-        with self.i2c as bus : bus.writeByte(0x80)
+        with self.device as bus : bus.writeByte(0x80)
 
     def setDimming(self, dim):
         if   dim <  0 : dim = 0
         elif dim > 15 : dim = 15
-        with self.i2c as bus : bus.writeByte(0xe0 | int(dim))
+        with self.device as bus : bus.writeByte(0xe0 | int(dim))
+
+    def setColon(self, flag):
+        with self.device as bus : bus.writeByteToRegister(HT16K33.REGISTER_COLON, 0xff if flag else 0x00)
 
     def writeNumber(self, number):
         d4 = number % 10
@@ -71,8 +74,8 @@ class HT16K33(object):
 
         self._writeDigits(d1, False, d2, False, d3, False, d4, False)
 
-    def writeTemperature(self, temp):
-        number = int(10 * temp + 0.5)
+    def writeFixedPoint(self, number):
+        number = int(10 * number + 0.5)
         d4 = number % 10
 
         number = int(number/10)
@@ -87,27 +90,28 @@ class HT16K33(object):
         self._writeDigits(d1, False, d2, False, d3, True, d4, False)
 
     def _writeDigits(self, d1, d1Dot, d2, d2Dot, d3, d3Dot, d4, d4Dot):
-        print_zeros = d1 > 0 or d1Dot
-        if print_zeros:
-            self._writeDigit(HT16K33.REGISTER_DIGIT_1, d1, d1Dot)
-        else:
-            with self.i2c as bus : bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_1, 0x00)
+        with self.device as bus:
+            print_zeros = d1 > 0 or d1Dot
+            if print_zeros:
+                self._writeDigit(bus, HT16K33.REGISTER_DIGIT_1, d1, d1Dot)
+            else:
+                bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_1, 0x00)
 
-        print_zeros = print_zeros or d2 > 0 or d2Dot
-        if print_zeros:
-            self._writeDigit(HT16K33.REGISTER_DIGIT_2, d2, d2Dot)
-        else:
-            with self.i2c as bus : bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_2, 0x00)
+            print_zeros = print_zeros or d2 > 0 or d2Dot
+            if print_zeros:
+                self._writeDigit(bus, HT16K33.REGISTER_DIGIT_2, d2, d2Dot)
+            else:
+                bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_2, 0x00)
 
-        print_zeros = print_zeros or d3 > 0 or d3Dot
-        if print_zeros:
-            self._writeDigit(HT16K33.REGISTER_DIGIT_3, d3, d3Dot)
-        else:
-            with self.i2c as bus : bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_3, 0x00)
+            print_zeros = print_zeros or d3 > 0 or d3Dot
+            if print_zeros:
+                self._writeDigit(bus, HT16K33.REGISTER_DIGIT_3, d3, d3Dot)
+            else:
+                bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_3, 0x00)
 
-        self._writeDigit(HT16K33.REGISTER_DIGIT_4, d4, d4Dot)
+            self._writeDigit(bus, HT16K33.REGISTER_DIGIT_4, d4, d4Dot)
 
-    def _writeDigit(self, position, number, dotOn=False):
+    def _writeDigit(self, bus, position, number, dotOn=False):
         bitmap = HT16K33.character_set[number]
         if dotOn : bitmap = bitmap | 0x80
-        with self.i2c as bus : bus.writeByteToRegister(position, bitmap)
+        bus.writeByteToRegister(position, bitmap)
