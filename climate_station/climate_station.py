@@ -13,6 +13,7 @@ from device_poller import DevicePoller
 from ledbank import LedBank
 from presenter import Presenter
 from classes.logger import LogManager
+from data_logger import DataLogger
 
 
 LogManager.setupLogging("climate-station")
@@ -37,12 +38,16 @@ display.setDimming(15)
 presenter = Presenter(2, poller, ledbank, display)
 
 
+dataLogger = DataLogger(60, poller)
+
+
 print("Hello world.")
 
 try:
     with IdleLoop() as idle:
         idle.register(poller)
         idle.register(presenter)
+        idle.register(dataLogger)
         idle.run()
 
 except:
