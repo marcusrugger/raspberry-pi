@@ -12,6 +12,8 @@ class DevicePoller(idleloop.Countdown):
         self.hygrometer     = hygrometer
         self.barometer      = barometer
 
+        self.execute()
+
     def dispose(self):
         self.thermometer.dispose()
         self.hygrometer.dispose()
@@ -22,11 +24,11 @@ class DevicePoller(idleloop.Countdown):
         self.humidity       = self.hygrometer.read_sensor()
         self.pressure       = self.barometer.read_sensor()
 
-    def temperature(self):
+    def getTemperature(self):
         return self.temperature['fahrenheit']
 
-    def humidity(self):
+    def getHumidity(self):
         return self.humidity['humidity']
 
-    def pressure(self):
+    def getPressure(self):
         return self.pressure['pressure']

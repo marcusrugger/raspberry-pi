@@ -27,7 +27,7 @@ class HT16K33(object):
 
         self.turnOffDisplay()
         self.turnOffOscillator()
-        self.setDimming(0)
+        self.setDimming(15)
 
         with self.device as bus:
             bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_1, 0x00)

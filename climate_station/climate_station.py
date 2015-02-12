@@ -60,10 +60,10 @@ ledbank = LedBank(ports)
 display = LedDisplayController(i2c(1, LedDisplayController.BASE_ADDRESS))
 display.turnOnOscillator()
 display.turnOnDisplay()
-display.setDimming(0)
+display.setDimming(15)
 
 
-presenter = Presenter(2, poller, ledbank)
+presenter = Presenter(2, poller, ledbank, display)
 
 
 print("Hello world.")
