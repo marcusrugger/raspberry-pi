@@ -12,7 +12,7 @@ from i2c.py2cbus import i2c
 from device_poller import DevicePoller
 from ledbank import LedBank
 from presenter import Presenter
-from logging import LogManager
+from logger import LogManager
 
 
 LogManager.setupLogging("climate-station")
