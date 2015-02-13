@@ -47,7 +47,7 @@ class Presenter(idleloop.Countdown):
 
     def modeTime(self):
         now = datetime.now()
-        t = 100 * now.hour + now.minute
+        t = 100 * (now.hour if now.hour <= 12 else now.hour - 12) + now.minute
         self.display.writeNumber(t)
         self.display.setColon(True)
         self.ledbank.turnOnLed4()
