@@ -35,3 +35,12 @@ class DevicePoller(idleloop.Countdown):
 
     def getPressure(self):
         return self.pressure['pressure']
+
+    def getAllTemperature(self):
+        return self.temperature
+
+    def getAllHumidity(self):
+        return self.humidity
+
+    def getAllPressure(self):
+        return self.pressure
