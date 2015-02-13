@@ -15,6 +15,8 @@ from presenter import Presenter
 from classes.logger import LogManager
 from data_logger import DataLogger
 
+print("Hello world.")
+
 
 LogManager.setupLogging("climate-station")
 
@@ -41,13 +43,10 @@ presenter = Presenter(2, poller, ledbank, display)
 dataLogger = DataLogger(60, poller)
 
 
-print("Hello world.")
-
 try:
     with IdleLoop() as idle:
-        idle.register(poller)
-        idle.register(presenter)
         idle.register(dataLogger)
+        idle.register(presenter)
         idle.run()
 
 except:
