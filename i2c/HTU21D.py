@@ -1,6 +1,7 @@
 # Hygrometer
 import time
 import struct
+from datetime import datetime
 
 
 class HTU21D(object):
@@ -29,23 +30,35 @@ class HTU21D(object):
 
         return word & 0xfffc
 
-    def _read_humidity(self):
-        word = self._read_measurement('\xf5')
-        humidity = (-6.0) + 125.0 * word / 65536.0
-        rv = {}
-        rv['humidity'] = humidity
-        return rv
-
     def _read_temperature(self):
         word = self._read_measurement('\xf3')
         celsius = (-46.85) + 175.72 * word / 65536.0
         fahrenheit = 1.8 * celsius + 32
         rv = {}
-        rv['celsius']       = celsius
-        rv['fahrenheit']    = fahrenheit
+        rv['register']      = hex(word)
+        rv['celsius']       = int(10 * celsius + 0.5) / 10.0
+        rv['fahrenheit']    = int(10 * fahrenheit + 0.5) / 10.0
+        return rv
+
+    def _read_humidity(self):
+        word = self._read_measurement('\xf5')
+        humidity = (-6.0) + 125.0 * word / 65536.0
+        rv = {}
+        rv['register']  = hex(word)
+        rv['relative']  = int(10 * humidity + 0.5) / 10.0
         return rv
 
     def read_sensor(self):
-        h = self._read_humidity()
-        t = self._read_temperature()
-        return dict(h.items() + t.items())
+        rv = {}
+        rv['timestamp']     = datetime.now().isoformat()
+        rv['temperature']   = self._read_temperature()
+        rv['humidity']      = self._read_humidity()
+        return rv
+
+    def getTemperature(self):
+        data = _read_temperature()
+        return data['fahrenheit']
+
+    def getHumidity(self):
+        data = _read_humidity()
+        return data['relative']

@@ -27,7 +27,9 @@ class i2c:
 
    # i2c transactions
    def readByte(self):
-      return os.read(self.fd, 1)
+      s = os.read(self.fd, 1)
+      up, = struct.unpack("B", s)
+      return up
 
    def readWord(self):
       return os.read(self.fd, 2)
@@ -37,6 +39,10 @@ class i2c:
 
    def writeByte(self, byte):
       buffer = struct.pack("B", byte)
+      return os.write(self.fd, buffer)
+
+   def writeWord(self, word):
+      buffer = struct.pack("H", word)
       return os.write(self.fd, buffer)
 
    def writeBytes(self, bytes):

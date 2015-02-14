@@ -1,5 +1,6 @@
 # Thermometer
 import time
+from datetime import datetime
 
 
 def swapBytes(word):
@@ -33,15 +34,13 @@ class MCP9808(object):
         celsius     = sign * (register & 0x0fff) / 16.0
         fahrenheit  = 1.8 * celsius + 32.0
 
+        t = {}
+        t['register']       = hex(register)
+        t['celsius']        = int(10 * celsius + 0.5) / 10.0
+        t['fahrenheit']     = int(10 * fahrenheit + 0.5) / 10.0
+
         rv = {}
-        rv['timestamp']     = time.time()
-        rv['from_chip']     = register
-        rv['whole']         = whole
-        rv['fraction']      = fraction
-        rv['celsius']       = celsius
-        rv['fahrenheit']    = fahrenheit
+        rv['timestamp']     = datetime.now().isoformat()
+        rv['temperature']   = t
 
         return rv
-
-    def print_temperature(self, temp):
-        print("Celsius: {:3} {:2}/16ths, Fahrenheit: {:4.1f}".format(temp['whole'], temp['fraction'], temp['fahrenheit']))
