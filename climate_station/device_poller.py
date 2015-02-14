@@ -28,10 +28,19 @@ class DevicePoller(idleloop.Countdown):
         self.pressure       = self.barometer.read_sensor()
 
     def getTemperature(self):
-        return self.temperature['fahrenheit']
+        return self.temperature['temperature']['fahrenheit']
 
     def getHumidity(self):
-        return self.humidity['humidity']
+        return self.humidity['humidity']['relative']
 
     def getPressure(self):
         return self.pressure['pressure']
+
+    def getAllTemperature(self):
+        return self.temperature
+
+    def getAllHumidity(self):
+        return self.humidity
+
+    def getAllPressure(self):
+        return self.pressure
