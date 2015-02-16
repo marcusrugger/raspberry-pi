@@ -43,7 +43,7 @@ class MPL3115A2(object):
     REGISTER_CONTROL_RAW            = 0x40  # Raw output mode
     REGISTER_CONTROL_ALT            = 0x90  # Altimeter mode (1 = Altimeter, 0 = Barometer)
 
-    INCHES_MERCURY  = 3386.389
+    PASCALS_PER_INCH_OF_MERCURY     = 3386.389
 
 
     def __init__(self, bus):
@@ -61,22 +61,12 @@ class MPL3115A2(object):
             device.writeByteToRegister(MPL3115A2.REGISTER_PT_DATA_CFG, 0x00)
             device.writeByteToRegister(MPL3115A2.REGISTER_CONTROL, 0x00)
 
-    def _initiateMeasurement(self, device):
-        device.writeByteToRegister(MPL3115A2.REGISTER_CONTROL, MPL3115A2.REGISTER_CONTROL_SBYB |
-                                                               MPL3115A2.REGISTER_CONTROL_OST  |
-                                                               MPL3115A2.REGISTER_CONTROL_OS111)
-
-        status = 0
-        while (status & MPL3115A2.REGISTER_STATUS_DATA_READY) != MPL3115A2.REGISTER_STATUS_DATA_READY:
-            time.sleep(0.1)
-            status = device.readByteFromRegister(MPL3115A2.REGISTER_STATUS)
-            print("status: 0x{:02x}".format(status))
-
     def read_sensor(self):
         print("Barometer read_sensor")
         with self.bus as device:
             self._initiateMeasurement(device)
             raw = device.readBytes(6)
+            #self._setDeviceToStandby(device)
 
         status, pmsb, pcsb, plsb, tmsb, tlsb = struct.unpack("6B", raw)
 
@@ -84,7 +74,7 @@ class MPL3115A2(object):
         register_temperature = (tmsb << 8) | tlsb
 
         pascals     = register_pressure / 64.0
-        inHg        = pascals / MPL3115A2.INCHES_MERCURY
+        inHg        = pascals / MPL3115A2.PASCALS_PER_INCH_OF_MERCURY
         celsius     = register_temperature / 256.0
         fahrenheit  = celsius_to_fahrenheit(celsius)
 
@@ -103,6 +93,21 @@ class MPL3115A2(object):
         rv['temperature']['fahrenheit'] = round_one_decimal(fahrenheit)
 
         return rv
+
+    def _initiateMeasurement(self, device):
+        device.writeByteToRegister(MPL3115A2.REGISTER_CONTROL, MPL3115A2.REGISTER_CONTROL_SBYB |
+                                                               MPL3115A2.REGISTER_CONTROL_OST  |
+                                                               MPL3115A2.REGISTER_CONTROL_OS111)
+
+        status = 0
+        while (status & MPL3115A2.REGISTER_STATUS_DATA_READY) != MPL3115A2.REGISTER_STATUS_DATA_READY:
+            time.sleep(0.1)
+            status = device.readByteFromRegister(MPL3115A2.REGISTER_STATUS)
+            print("status: 0x{:02x}".format(status))
+
+    def _setDeviceToStandby(self, device):
+        device.writeByteToRegister(MPL3115A2.REGISTER_PT_DATA_CFG, 0x00)
+        device.writeByteToRegister(MPL3115A2.REGISTER_CONTROL, 0x00)
 
 
 if __name__ == "__main__":

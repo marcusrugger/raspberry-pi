@@ -12,8 +12,6 @@ class DevicePoller(idleloop.Countdown):
         self.hygrometer     = hygrometer
         self.barometer      = barometer
 
-        self.execute()
-
     def dispose(self):
         self.thermometer.dispose()
         self.hygrometer.dispose()
