@@ -12,6 +12,10 @@ class DevicePoller(idleloop.Countdown):
         self.hygrometer     = hygrometer
         self.barometer      = barometer
 
+        self.temperature    = {}
+        self.humidity       = {}
+        self.pressure       = {}
+
     def dispose(self):
         self.thermometer.dispose()
         self.hygrometer.dispose()
@@ -21,9 +25,30 @@ class DevicePoller(idleloop.Countdown):
         self.poll_devices()
 
     def poll_devices(self):
-        self.temperature    = self.thermometer.read_sensor()
-        self.humidity       = self.hygrometer.read_sensor()
-        self.pressure       = self.barometer.read_sensor()
+        self._pollThermometer();
+        self._pollHygrometer();
+        self._pollBarometer();
+
+    def _pollThermometer(self):
+        try:
+            self.temperature = self.thermometer.read_sensor()
+        except OSError as e:
+            print('DevicePoller: _pollThermometer: Caught exception: {0}'.format(e))
+            raise
+
+    def _pollHygrometer(self):
+        try:
+            self.humidity = self.hygrometer.read_sensor()
+        except OSError as e:
+            print('DevicePoller: _pollHygrometer: Caught exception: {0}'.format(e))
+            raise
+
+    def _pollBarometer(self):
+        try:
+            self.pressure = self.barometer.read_sensor()
+        except OSError as e:
+            print('DevicePoller: _pollBarometer: Caught exception: {0}'.format(e))
+            raise
 
     def getTemperature(self):
         return self.temperature['temperature']['fahrenheit']

@@ -12,6 +12,7 @@ from i2c.py2cbus import i2c
 from device_poller import DevicePoller
 from ledbank import LedBank
 from presenter import Presenter
+from i2c.arduino import Arduino
 from classes.logger import LogManager
 from data_logger import DataLogger
 
@@ -28,7 +29,8 @@ poller = DevicePoller(1, thermometer, hygrometer, barometer)
 
 
 ports   = PortExpander(i2c(1, PortExpander.BASE_ADDRESS))
-ledbank = LedBank(ports)
+arduino = Arduino(i2c(1, Arduino.BASE_ADDRESS))
+ledbank = LedBank(ports, arduino)
 
 
 display = LedDisplayController(i2c(1, LedDisplayController.BASE_ADDRESS))

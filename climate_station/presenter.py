@@ -31,23 +31,39 @@ class Presenter(idleloop.Countdown):
         self.display.setColon(False)
 
     def modeTemperature(self):
-        value = self.poller.getTemperature()
-        self.display.writeFixedPoint(value)
-        self.ledbank.turnOnLed1()
+        try:
+            value = self.poller.getTemperature()
+            self.display.writeFixedPoint(value)
+            self.ledbank.turnOnLed1()
+        except OSError as e:
+            print('Presenter: modeTemperature: Caught exception: {0}'.format(e))
+            raise
 
     def modeHumidity(self):
-        value = self.poller.getHumidity()
-        self.display.writeFixedPoint(value)
-        self.ledbank.turnOnLed2()
+        try:
+            value = self.poller.getHumidity()
+            self.display.writeFixedPoint(value)
+            self.ledbank.turnOnLed2()
+        except OSError as e:
+            print('Presenter: modeHumidity: Caught exception: {0}'.format(e))
+            raise
 
     def modeBarometer(self):
-        value = self.poller.getPressure()
-        self.display.writeFixedPoint(value)
-        self.ledbank.turnOnLed3()
+        try:
+            value = self.poller.getPressure()
+            self.display.writeFixedPoint(value)
+            self.ledbank.turnOnLed3()
+        except OSError as e:
+            print('Presenter: modeBarometer: Caught exception: {0}'.format(e))
+            raise
 
     def modeTime(self):
-        now = datetime.now()
-        t = 100 * (now.hour if now.hour <= 12 else now.hour - 12) + now.minute
-        self.display.writeNumber(t)
-        self.display.setColon(True)
-        self.ledbank.turnOnLed4()
+        try:
+            now = datetime.now()
+            t = 100 * (now.hour if now.hour <= 12 else now.hour - 12) + now.minute
+            self.display.writeNumber(t)
+            self.display.setColon(True)
+            self.ledbank.turnOnLed4()
+        except OSError as e:
+            print('Presenter: modeTime: Caught exception: {0}'.format(e))
+            raise

@@ -3,8 +3,9 @@ import logging
 
 
 class LedBank(object):
-    def __init__(self, ports):
+    def __init__(self, ports, arduino):
         self.ports = ports
+        self.arduino = arduino
         self._setLeds(0x00)
         self.log = logging.getLogger('webcam.LedBank')
         self.log.info('Instantiate LED bank.')
@@ -14,18 +15,49 @@ class LedBank(object):
         self._setLeds(0x00)
 
     def _setLeds(self, bitmap):
-        value = self.ports.readPortA()
-        value = (value & 0x0f) | bitmap
-        self.ports.writePortA(value)
+        try:
+            value = self.ports.readPortA()
+            value = (value & 0x0f) | bitmap
+            self.ports.writePortA(value)
+        except OSError as e:
+            print('LedBank: _setLeds: Caught exception: {0}'.format(e))
+            raise
+
+    def _setArduino(self, led1, led2, led3, led4):
+        try:
+            self.arduino.send(led1, led2, led3, led4)
+        except OSError as e:
+            print('LedBank: _setArduino: Caught exception: {0}'.format(e))
+            raise
 
     def turnOnLed1(self):
-        self._setLeds(0x80)
+        try:
+            self._setLeds(0x80)
+            self._setArduino(0xff, 0x00, 0x00, 0x00)
+        except OSError as e:
+            print('LedBank: turnOnLed1: Caught exception: {0}'.format(e))
+            raise
 
     def turnOnLed2(self):
-        self._setLeds(0x40)
+        try:
+            self._setLeds(0x40)
+            self._setArduino(0x00, 0xff, 0x00, 0x00)
+        except OSError as e:
+            print('LedBank: turnOnLed2: Caught exception: {0}'.format(e))
+            raise
 
     def turnOnLed3(self):
-        self._setLeds(0x20)
+        try:
+            self._setLeds(0x20)
+            self._setArduino(0x00, 0x00, 0xff, 0x00)
+        except OSError as e:
+            print('LedBank: turnOnLed3: Caught exception: {0}'.format(e))
+            raise
 
     def turnOnLed4(self):
-        self._setLeds(0x10)
+        try:
+            self._setLeds(0x10)
+            self._setArduino(0x00, 0x00, 0x00, 0xff)
+        except OSError as e:
+            print('LedBank: turnOnLed4: Caught exception: {0}'.format(e))
+            raise

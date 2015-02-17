@@ -90,28 +90,36 @@ class HT16K33(object):
         self._writeDigits(d1, False, d2, False, d3, True, d4, False)
 
     def _writeDigits(self, d1, d1Dot, d2, d2Dot, d3, d3Dot, d4, d4Dot):
-        with self.device as bus:
-            print_zeros = d1 > 0 or d1Dot
-            if print_zeros:
-                self._writeDigit(bus, HT16K33.REGISTER_DIGIT_1, d1, d1Dot)
-            else:
-                bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_1, 0x00)
+        try:
+            with self.device as bus:
+                print_zeros = d1 > 0 or d1Dot
+                if print_zeros:
+                    self._writeDigit(bus, HT16K33.REGISTER_DIGIT_1, d1, d1Dot)
+                else:
+                    bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_1, 0x00)
 
-            print_zeros = print_zeros or d2 > 0 or d2Dot
-            if print_zeros:
-                self._writeDigit(bus, HT16K33.REGISTER_DIGIT_2, d2, d2Dot)
-            else:
-                bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_2, 0x00)
+                print_zeros = print_zeros or d2 > 0 or d2Dot
+                if print_zeros:
+                    self._writeDigit(bus, HT16K33.REGISTER_DIGIT_2, d2, d2Dot)
+                else:
+                    bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_2, 0x00)
 
-            print_zeros = print_zeros or d3 > 0 or d3Dot
-            if print_zeros:
-                self._writeDigit(bus, HT16K33.REGISTER_DIGIT_3, d3, d3Dot)
-            else:
-                bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_3, 0x00)
+                print_zeros = print_zeros or d3 > 0 or d3Dot
+                if print_zeros:
+                    self._writeDigit(bus, HT16K33.REGISTER_DIGIT_3, d3, d3Dot)
+                else:
+                    bus.writeByteToRegister(HT16K33.REGISTER_DIGIT_3, 0x00)
 
-            self._writeDigit(bus, HT16K33.REGISTER_DIGIT_4, d4, d4Dot)
+                self._writeDigit(bus, HT16K33.REGISTER_DIGIT_4, d4, d4Dot)
+        except OSError as e:
+            print('HT16K33: _writeDigits: Caught exception: {0}'.format(e))
+            raise
 
     def _writeDigit(self, bus, position, number, dotOn=False):
         bitmap = HT16K33.character_set[number]
         if dotOn : bitmap = bitmap | 0x80
-        bus.writeByteToRegister(position, bitmap)
+        try:
+            bus.writeByteToRegister(position, bitmap)
+        except OSError as e:
+            print('HT16K33: _writeDigit: Caught exception: {0}'.format(e))
+            raise
