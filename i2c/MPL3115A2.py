@@ -1,16 +1,24 @@
 # Barometer/Altimeter
 import time
 import struct
+import logging
 from datetime import datetime
+from classes.logger import LogManager
 
 
-def celsius_to_fahrenheit(celsius):
-    return 1.8 * celsius + 32.0
+class ConvertUnits(object):
+    @staticmethod
+    def celsius_to_fahrenheit(celsius):
+        return 1.8 * celsius + 32.0
 
-def round_one_decimal(value):
+    @staticmethod
+    def celsius_to_kelvin(celsius):
+        return 274.15 + celsius
+
+def round_decimal_one(value):
     return int(10 * value) / 10.0
 
-def round_two_decimal(value):
+def round_decimal_two(value):
     return int(100 * value) / 100.0
 
 
@@ -43,11 +51,16 @@ class MPL3115A2(object):
     REGISTER_CONTROL_RAW            = 0x40  # Raw output mode
     REGISTER_CONTROL_ALT            = 0x90  # Altimeter mode (1 = Altimeter, 0 = Barometer)
 
+    PASCALS_PER_MILLIBAR            = 100
     PASCALS_PER_INCH_OF_MERCURY     = 3386.389
+    PASCALS_PER_PSI                 = 6894.75729
+    PASCALS_PER_ATMOSPHERE          = 101325
 
 
     def __init__(self, bus):
         self.bus = bus
+        self.log = logging.getLogger('climate-station.MPL3115A2')
+        self.log.info('MPL3115A2 - Barometer.')
 
         with bus as device:
             device.writeByteToRegister(MPL3115A2.REGISTER_F_SETUP,     MPL3115A2.REGISTER_F_SETUP_FIFO_DISABLE)
@@ -62,21 +75,24 @@ class MPL3115A2(object):
             device.writeByteToRegister(MPL3115A2.REGISTER_CONTROL, 0x00)
 
     def read_sensor(self):
-        print("Barometer read_sensor")
         with self.bus as device:
             self._initiateMeasurement(device)
             raw = device.readBytes(6)
-            #self._setDeviceToStandby(device)
 
         status, pmsb, pcsb, plsb, tmsb, tlsb = struct.unpack("6B", raw)
+        self.log.debug("read_sensor: status: {:02x}, pressure: {:02x}{:02x}{:02x}, temperature: {:02x}{:02x}".format(status, pmsb, pcsb, plsb, tmsb, tlsb))
 
         register_pressure    = (pmsb << 16) | (pcsb << 8) | plsb
         register_temperature = (tmsb << 8) | tlsb
 
         pascals     = register_pressure / 64.0
         inHg        = pascals / MPL3115A2.PASCALS_PER_INCH_OF_MERCURY
+        psi         = pascals / MPL3115A2.PASCALS_PER_PSI
+        atmosphere  = pascals / MPL3115A2.PASCALS_PER_ATMOSPHERE
+
         celsius     = register_temperature / 256.0
-        fahrenheit  = celsius_to_fahrenheit(celsius)
+        kelvin      = ConvertUnits.celsius_to_kelvin(celsius)
+        fahrenheit  = ConvertUnits.celsius_to_fahrenheit(celsius)
 
         rv = {}
 
@@ -84,13 +100,16 @@ class MPL3115A2(object):
         rv['pressure']      = {}
         rv['temperature']   = {}
 
-        rv['pressure']['register']  = hex(register_pressure)
-        rv['pressure']['pascals']   = round_one_decimal(pascals)
-        rv['pressure']['inHg']      = round_two_decimal(inHg)
+        rv['pressure']['register']      = hex(register_pressure)
+        rv['pressure']['pascals']       = round_decimal_one(pascals)
+        rv['pressure']['inHg']          = round_decimal_two(inHg)
+        rv['pressure']['psi']           = round_decimal_two(psi)
+        rv['pressure']['atmosphere']    = round_decimal_two(atmosphere)
 
         rv['temperature']['register']   = hex(register_temperature)
-        rv['temperature']['celsius']    = round_one_decimal(celsius)
-        rv['temperature']['fahrenheit'] = round_one_decimal(fahrenheit)
+        rv['temperature']['celsius']    = round_decimal_one(celsius)
+        rv['temperature']['kelvin']     = round_decimal_one(kelvin)
+        rv['temperature']['fahrenheit'] = round_decimal_one(fahrenheit)
 
         return rv
 
@@ -103,7 +122,7 @@ class MPL3115A2(object):
         while (status & MPL3115A2.REGISTER_STATUS_DATA_READY) != MPL3115A2.REGISTER_STATUS_DATA_READY:
             time.sleep(0.1)
             status = device.readByteFromRegister(MPL3115A2.REGISTER_STATUS)
-            print("status: 0x{:02x}".format(status))
+            self.log.debug("_initiateMeasurement: status: {:02x}".format(status))
 
     def _setDeviceToStandby(self, device):
         device.writeByteToRegister(MPL3115A2.REGISTER_PT_DATA_CFG, 0x00)

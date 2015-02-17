@@ -27,10 +27,10 @@ class DataLogger(idleloop.Countdown):
 
         # print(json.dumps(log))
 
-        log = {}
-        log["location"]     = self.location
-        log["MCP9808"]      = self.poller.getAllTemperature()
-        log["HTU21D"]       = self.poller.getAllHumidity()
-        log["MPL3115A2"]    = self.poller.getAllPressure()
+        # log = {}
+        # log["location"]     = self.location
+        # log["MCP9808"]      = self.poller.getAllTemperature()
+        # log["HTU21D"]       = self.poller.getAllHumidity()
+        # log["MPL3115A2"]    = self.poller.getAllPressure()
 
-        print(json.dumps(log))
+        # print(json.dumps(log))
