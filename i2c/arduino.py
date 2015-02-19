@@ -18,14 +18,14 @@ class Arduino(object):
         pass
 
     def send(self, led1, led2, led3, led4):
-      try:
-        with self.i2c as device:
-          device.writeByteToRegister(0x00, led1)
-          time.sleep(0.01)
-          device.writeByteToRegister(0x01, led2)
-          time.sleep(0.01)
-          device.writeByteToRegister(0x02, led3)
-          time.sleep(0.01)
-          device.writeByteToRegister(0x03, led4)
-      except OSError as e:
-          self.log.error('send: Caught exception: {0}'.format(e))
+        try:
+            with self.i2c as device:
+                device.writeByteToRegister(0x00, led1)
+                time.sleep(0.01)
+                device.writeByteToRegister(0x01, led2)
+                time.sleep(0.01)
+                device.writeByteToRegister(0x02, led3)
+                time.sleep(0.01)
+                device.writeByteToRegister(0x03, led4)
+        except OSError as e:
+            self.log.error(e)

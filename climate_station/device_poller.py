@@ -1,12 +1,16 @@
+import logging
 import classes.idleloop as idleloop
 from i2c.MCP9808 import MCP9808 as TemperatureSensor
 from i2c.HTU21D import HTU21D as HumiditySensor
 from i2c.MPL3115A2 import MPL3115A2 as BarometricSensor
+from classes.logger import LogManager
 
 
 class DevicePoller(idleloop.Countdown):
     def __init__(self, sleep, thermometer, hygrometer, barometer):
         idleloop.Countdown.__init__(self, sleep)
+        self.log = logging.getLogger('climate-station.DevicePoller')
+        self.log.info('Device poller.')
 
         self.thermometer    = thermometer
         self.hygrometer     = hygrometer
@@ -33,22 +37,19 @@ class DevicePoller(idleloop.Countdown):
         try:
             self.temperature = self.thermometer.read_sensor()
         except OSError as e:
-            print('DevicePoller: _pollThermometer: Caught exception: {0}'.format(e))
-            raise
+            self.log.error(e)
 
     def _pollHygrometer(self):
         try:
             self.humidity = self.hygrometer.read_sensor()
         except OSError as e:
-            print('DevicePoller: _pollHygrometer: Caught exception: {0}'.format(e))
-            raise
+            self.log.error(e)
 
     def _pollBarometer(self):
         try:
             self.pressure = self.barometer.read_sensor()
         except OSError as e:
-            print('DevicePoller: _pollBarometer: Caught exception: {0}'.format(e))
-            raise
+            self.log.error(e)
 
     def getTemperature(self):
         return self.temperature['temperature']['fahrenheit']
