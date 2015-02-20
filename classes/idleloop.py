@@ -43,6 +43,11 @@ class IdleLoop:
             obj.dispose()
 
 
+    def setTicksPerSecond(self, ticks):
+        IdleLoop.TICKS_PER_SECOND   = ticks
+        IdleLoop.RESOLUTION         = (1 / ticks)
+
+
     def setDone(self, flag):
         self.isDone = flag
 
@@ -51,7 +56,7 @@ class IdleLoop:
         if hasattr(registrant.__class__, 'tick') and callable(getattr(registrant.__class__, 'tick')):
             self.registrants.append(registrant)
         else:
-            self.log.error('register: registrant must have tick() method: {0}'.format(registrant.__class__))
+            self.log.error('registrant must have tick() method: {0}'.format(registrant.__class__))
 
 
     def unregister(self, registrant):

@@ -7,64 +7,34 @@ from classes.logger import LogManager
 
 
 class DevicePoller(idleloop.Countdown):
-    def __init__(self, sleep, thermometer, hygrometer, barometer):
+    def __init__(self, sleep):
         idleloop.Countdown.__init__(self, sleep)
         self.log = logging.getLogger('climate-station.DevicePoller')
         self.log.info('Device poller.')
 
-        self.thermometer    = thermometer
-        self.hygrometer     = hygrometer
-        self.barometer      = barometer
-
-        self.temperature    = {}
-        self.humidity       = {}
-        self.pressure       = {}
+        self.devices = {}
+        self.readings = {}
 
     def dispose(self):
-        self.thermometer.dispose()
-        self.hygrometer.dispose()
-        self.barometer.dispose()
+        pass
 
     def execute(self):
         self.poll_devices()
 
     def poll_devices(self):
-        self._pollThermometer();
-        self._pollHygrometer();
-        self._pollBarometer();
+        self.log.debug(self.devices)
+        for key in self.devices:
+            self.log.debug('polling device: {0}'.format(key))
+            value = self.devices[key].read_sensor()
+            self.log.debug('value: {}'.format(value))
+            self.readings[key] = value
 
-    def _pollThermometer(self):
-        try:
-            self.temperature = self.thermometer.read_sensor()
-        except OSError as e:
-            self.log.error(e)
+    def add_device(self, name, device):
+        if hasattr(device.__class__, 'read_sensor') and callable(getattr(device.__class__, 'read_sensor')):
+            self.log.info('register device: {0}'.format(name))
+            self.devices[name]  = device
+        else:
+            self.log.error('add_device: device must have read_sensor() method: {0}'.format(device.__class__))
 
-    def _pollHygrometer(self):
-        try:
-            self.humidity = self.hygrometer.read_sensor()
-        except OSError as e:
-            self.log.error(e)
-
-    def _pollBarometer(self):
-        try:
-            self.pressure = self.barometer.read_sensor()
-        except OSError as e:
-            self.log.error(e)
-
-    def getTemperature(self):
-        return self.temperature['temperature']['fahrenheit']
-
-    def getHumidity(self):
-        return self.humidity['humidity']['relative']
-
-    def getPressure(self):
-        return self.pressure['pressure']['inHg']
-
-    def getAllTemperature(self):
-        return self.temperature
-
-    def getAllHumidity(self):
-        return self.humidity
-
-    def getAllPressure(self):
-        return self.pressure
+    def get_readings(self):
+        return self.readings

@@ -6,8 +6,6 @@ class Presenter(idleloop.Countdown):
     def __init__(self, sleep, poller, ledbank, display):
         idleloop.Countdown.__init__(self, sleep)
 
-
-
         self.poller     = poller
         self.ledbank    = ledbank
         self.display    = display
@@ -32,7 +30,7 @@ class Presenter(idleloop.Countdown):
 
     def modeTemperature(self):
         try:
-            value = self.poller.getTemperature()
+            value = self.poller.get_readings()["temperature"]["farhenheit"]
             self.display.writeFixedPoint(value)
             self.ledbank.turnOnLed1()
         except OSError as e:
@@ -41,7 +39,7 @@ class Presenter(idleloop.Countdown):
 
     def modeHumidity(self):
         try:
-            value = self.poller.getHumidity()
+            value = self.poller.get_readings()["humidity"]["relative"]
             self.display.writeFixedPoint(value)
             self.ledbank.turnOnLed2()
         except OSError as e:
@@ -50,7 +48,7 @@ class Presenter(idleloop.Countdown):
 
     def modeBarometer(self):
         try:
-            value = self.poller.getPressure()
+            value = self.poller.get_readings()["pressure"]["inHg"]
             self.display.writeFixedPoint(value)
             self.ledbank.turnOnLed3()
         except OSError as e:

@@ -16,7 +16,7 @@ class LogManager(object):
     @staticmethod
     def setupLogging(name):
         LogManager.setName(name)
-        loggingLevel = logging.INFO
+        loggingLevel = logging.DEBUG
 
         #FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
         #logging.basicConfig(format=FORMAT)
@@ -35,7 +35,7 @@ class LogManager(object):
 
         # create formatter and add it to the handlers
         #formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        formatter = logging.Formatter('[ %(levelname)5s - %(filename)16s:%(lineno)3s - %(funcName)16s ] %(message)s')
+        formatter = logging.Formatter('[ %(asctime)s - %(levelname)5s - %(filename)16s:%(lineno)3s - %(funcName)16s ] %(message)s')
         #fh.setFormatter(formatter)
         ch.setFormatter(formatter)
 

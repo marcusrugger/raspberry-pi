@@ -2,7 +2,7 @@
 
 import logging
 
-loggingLevel = logging.INFO
+loggingLevel = logging.DEBUG
 
 #FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
 #logging.basicConfig(format=FORMAT)
