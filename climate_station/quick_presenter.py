@@ -6,6 +6,11 @@ import RPi.GPIO as GPIO
 class QuickPresenter(idleloop.Countdown):
     PIN_SWITCH=22
 
+    DISPLAY_MODE_OFF            = 0
+    DISPLAY_MODE_TEMPERATURE    = (DISPLAY_MODE_OFF + 1)
+    DISPLAY_MODE_HUMIDITY       = (DISPLAY_MODE_TEMPERATURE + 1)
+    DISPLAY_MODE_ENDOF          = (DISPLAY_MODE_HUMIDITY + 1)
+
     def __init__(self, sleep, poller, display):
         idleloop.Countdown.__init__(self, sleep)
 
@@ -13,6 +18,7 @@ class QuickPresenter(idleloop.Countdown):
         self.display        = display
         self.mode           = 0
         self.isDisplayOn    = False
+        self.display_mode   = QuickPresenter.DISPLAY_MODE_OFF
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(QuickPresenter.PIN_SWITCH, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -21,19 +27,22 @@ class QuickPresenter(idleloop.Countdown):
         self.display.dispose()
 
     def execute(self):
-        if self.isDisplayed():
-            self.turnOnDisplay()
-            self.mode = self.mode + 1
-            if self.mode > 2 : self.mode = 1
-
-            self.resetDisplay()
-            if   self.mode is 1 : self.modeTemperature()
-            elif self.mode is 2 : self.modeHumidity()
-        else:
+        mode = self.displayMode()
+        if mode == QuickPresenter.DISPLAY_MODE_OFF:
             self.turnOffDisplay()
+        elif mode == QuickPresenter.DISPLAY_MODE_TEMPERATURE:
+            self.modeTemperature()
+        elif mode == QuickPresenter.DISPLAY_MODE_HUMIDITY:
+            self.modeHumidity()
 
-    def isDisplayed(self):
-        return GPIO.input(self.PIN_SWITCH) == GPIO.LOW
+    def displayMode(self):
+        isButtonPressed = GPIO.input(self.PIN_SWITCH) == GPIO.LOW
+        if isButtonPressed : self.bumpDisplayMode()
+        return self.display_mode
+
+    def bumpDisplayMode(self):
+        self.display_mode = self.display_mode + 1
+        if self.display_mode >= QuickPresenter.DISPLAY_MODE_ENDOF : self.display_mode = self.DISPLAY_MODE_OFF
 
     def turnOnDisplay(self):
         if not self.isDisplayOn:
@@ -43,8 +52,8 @@ class QuickPresenter(idleloop.Countdown):
 
     def turnOffDisplay(self):
         if self.isDisplayOn:
-            self.display.turnOffOscillator()
             self.display.turnOffDisplay()
+            self.display.turnOffOscillator()
             self.isDisplayOn = False
 
     def resetDisplay(self):
@@ -52,10 +61,8 @@ class QuickPresenter(idleloop.Countdown):
 
     def modeTemperature(self):
         try:
+            self.turnOnDisplay()
             reading = self.poller.get_readings()
-            print(reading)
-            print(reading["sensor"])
-            print(reading["sensor"]["temperature"])
             value = reading["sensor"]["temperature"]["fahrenheit"]
             self.display.writeFixedPoint(value)
         except OSError as e:
@@ -64,7 +71,9 @@ class QuickPresenter(idleloop.Countdown):
 
     def modeHumidity(self):
         try:
-            value = self.poller.get_readings()["sensor"]["humidity"]["relative"]
+            self.turnOnDisplay()
+            reading = self.poller.get_readings()
+            value = reading["sensor"]["humidity"]["relative"]
             self.display.writeFixedPoint(value)
         except OSError as e:
             print('Presenter: modeHumidity: Caught exception: {0}'.format(e))

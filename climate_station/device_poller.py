@@ -1,8 +1,5 @@
 import logging
 import classes.idleloop as idleloop
-from i2c.MCP9808 import MCP9808 as TemperatureSensor
-from i2c.HTU21D import HTU21D as HumiditySensor
-from i2c.MPL3115A2 import MPL3115A2 as BarometricSensor
 from classes.logger import LogManager
 
 
