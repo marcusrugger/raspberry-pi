@@ -8,7 +8,7 @@ from i2c.HTU21D import HTU21D as Sensor
 from i2c.HT16K33 import HT16K33 as LedDisplayController
 from i2c.py2cbus import i2c
 from device_poller import DevicePoller
-from quick_presenter import QuickPresenter as Presenter
+from mini_presenter import QuickPresenter as Presenter
 from classes.logger import LogManager
 from data_logger import DataLogger
 
